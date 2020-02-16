@@ -2,6 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <!--        公共模块-->
+        <module>iot-platform-common</module>
+        <!--        用户-->
+        <module>iot-platform-user</module>
+        <!--        资产-->
+        <module>iot-platform-asset</module>
+        <module>iot-platform-web</module>
+    </modules>
     <parent>
         <groupId>com.cqmike</groupId>
         <artifactId>iot</artifactId>
@@ -11,6 +20,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>iot-platform</name>
     <description>Demo project for Spring Boot</description>
+    <packaging>pom</packaging>
 
     <properties>
         <java.version>1.8</java.version>
