@@ -1,4 +1,4 @@
-package com.cqmike.iotplatform;
+package com.cqmike.platform;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

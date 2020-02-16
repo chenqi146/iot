@@ -1,13 +1,13 @@
-package com.cqmike.iotfront;
+package com.cqmike.mock;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class IotFrontApplication {
+public class IotMockApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(IotFrontApplication.class, args);
+        SpringApplication.run(IotMockApplication.class, args);
     }
 
 }

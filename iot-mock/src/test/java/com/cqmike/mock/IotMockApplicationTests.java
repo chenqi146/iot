@@ -1,4 +1,4 @@
-package com.cqmike.iotmock;
+package com.cqmike.mock;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
