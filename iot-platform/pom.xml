@@ -32,6 +32,12 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.cqmike</groupId>
+            <artifactId>core</artifactId>
+            <version>0.0.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>
