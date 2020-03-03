@@ -1,6 +1,8 @@
 package com.cqmike.front.config.mqtt;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -9,6 +11,7 @@ import org.springframework.integration.core.MessageProducer;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
+import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
@@ -26,10 +29,14 @@ import java.util.Objects;
 @Configuration
 public class MqttReceiveConfig {
 
+    private static final Logger log = LoggerFactory.getLogger(MqttReceiveConfig.class);
+
     /**
      *  获取topic的key
     **/
     private final static String TOPIC_KEY = "mqtt_receivedTopic";
+
+    public final static String CHANNEL_NAME_OUT = "mqttOutboundChannel";
 
     private final MqttConfig mqttConfig;
 
@@ -59,8 +66,30 @@ public class MqttReceiveConfig {
      *     接收通道
      */
     @Bean
-    public MessageChannel mqttInputChannel() {
+    public MessageChannel mqttInboundChannel() {
         return new DirectChannel();
+    }
+
+    /**
+     * MQTT信息通道（生产者）
+     */
+    @Bean(name = CHANNEL_NAME_OUT)
+    public MessageChannel mqttOutboundChannel() {
+        return new DirectChannel();
+    }
+
+    /**
+     * MQTT消息处理器（生产者）
+     */
+    @Bean
+    @ServiceActivator(inputChannel = CHANNEL_NAME_OUT)
+    public MessageHandler outbound() {
+        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(
+                mqttConfig.getClientId() + "_outbound",
+                this.mqttPahoClientFactory());
+        messageHandler.setAsync(true);
+        messageHandler.setDefaultTopic(mqttConfig.getDefaultTopic());
+        return messageHandler;
     }
 
     /**
@@ -74,15 +103,17 @@ public class MqttReceiveConfig {
         adapter.setCompletionTimeout(mqttConfig.getCompletionTimeout());
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(1);
-        adapter.setOutputChannel(this.mqttInputChannel());
+        adapter.setOutputChannel(this.mqttInboundChannel());
         return adapter;
     }
 
     @Bean
-    @ServiceActivator(inputChannel = "mqttInputChannel")
+    @ServiceActivator(inputChannel = "mqttInboundChannel")
     public MessageHandler handler() {
         return message -> {
             String topic = Objects.requireNonNull(message.getHeaders().get(TOPIC_KEY)).toString();
+            String data = new String((byte[]) message.getPayload());
+            log.info("topic: {}, data: {}", topic, data);
             //todo 处理消息
         };
     }

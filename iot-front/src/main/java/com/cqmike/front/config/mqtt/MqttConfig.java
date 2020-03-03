@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @program: iot
  * @ClassName: MqttConfig
- * @Description: TODO
+ * @Description: mqtt属性类
  * @Author: chen qi
  * @Date: 2020/3/2 21:52
  * @Version: 1.0
