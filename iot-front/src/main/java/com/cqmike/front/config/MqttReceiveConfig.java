@@ -1,4 +1,4 @@
-package com.cqmike.front.config.mqtt;
+package com.cqmike.front.config;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.slf4j.Logger;
@@ -88,18 +88,18 @@ public class MqttReceiveConfig {
                 mqttConfig.getClientId() + "_outbound",
                 this.mqttPahoClientFactory());
         messageHandler.setAsync(true);
-        messageHandler.setDefaultTopic(mqttConfig.getDefaultTopic());
+        messageHandler.setDefaultTopic(mqttConfig.getDefaultSenderTopic());
         return messageHandler;
     }
 
     /**
-     *     配置client,监听的topic
+     *     服务端配置client,监听的topic  消费者
      */
     @Bean
     public MessageProducer inbound() {
         MqttPahoMessageDrivenChannelAdapter adapter
                 = new MqttPahoMessageDrivenChannelAdapter(mqttConfig.getClientId() + "_inbound",
-                this.mqttPahoClientFactory(), mqttConfig.getDefaultTopic());
+                this.mqttPahoClientFactory(), mqttConfig.getDefaultReceiveTopic());
         adapter.setCompletionTimeout(mqttConfig.getCompletionTimeout());
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(1);
@@ -112,8 +112,8 @@ public class MqttReceiveConfig {
     public MessageHandler handler() {
         return message -> {
             String topic = Objects.requireNonNull(message.getHeaders().get(TOPIC_KEY)).toString();
-            String data = new String((byte[]) message.getPayload());
-            log.info("topic: {}, data: {}", topic, data);
+            String payload = String.valueOf(message.getPayload());
+            log.info("topic: {}, data: {}", topic, payload);
             //todo 处理消息
         };
     }

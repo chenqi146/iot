@@ -4,13 +4,30 @@ spring:
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
-  mqtt:
-    host: tcp://121.36.54.71:1883
-    client-id: testClientId
-    default-topic: testTopic
-    completion-timeout: 10000
-    username: root
-    password: cqmike
+  #    bootstrap-servers：连接kafka的地址，多个地址用逗号分隔
+  #    batch-size：当将多个记录被发送到同一个分区时， Producer 将尝试将记录组合到更少的请求中。这有助于提升客户端和服务器端的性能。这个配置控制一个批次的默认大小（以字节为单位）。16384是缺省的配置
+  #    retries：若设置大于0的值，客户端会将发送失败的记录重新发送
+  #    buffer-memory：Producer 用来缓冲等待被发送到服务器的记录的总字节数，33554432是缺省配置
+  #    key-serializer：关键字的序列化类
+  #    value-serializer：值的序列化类
+  kafka:
+    bootstrap-servers: 121.36.54.71:9092
+    producer:
+      retries: 0
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        linger.ms: 1
+    consumer:
+      enable-auto-commit: false
+      auto-commit-interval: 100ms
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        session.timeout.ms: 15000
+      group-id: kafkaTopic
 
   jpa:
     hibernate:
@@ -19,7 +36,14 @@ spring:
   jackson:
     serialization:
       indent-output: true
-
+mqtt:
+  host: tcp://121.36.54.71:1883
+  client-id: testClientId
+  default-receive-topic: testReceiveTopic
+  default-sender-topic: testSenderTopic
+  completion-timeout: 10000
+  username: root
+  password: cqmike
 #logging:
 #  level:
 #    root: debug

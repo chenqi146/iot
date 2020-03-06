@@ -1,6 +1,6 @@
 package com.cqmike.front.service;
 
-import com.cqmike.front.config.mqtt.MqttReceiveConfig;
+import com.cqmike.front.config.MqttReceiveConfig;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.handler.annotation.Header;

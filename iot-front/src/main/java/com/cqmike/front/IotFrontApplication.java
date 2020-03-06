@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 /**
  * @author chen qi
  */
-@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
 @SpringBootApplication
 public class IotFrontApplication {
 

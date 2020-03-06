@@ -1,4 +1,4 @@
-package com.cqmike.front.config.mqtt;
+package com.cqmike.front.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  **/
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "spring.mqtt")
+@ConfigurationProperties(prefix = "mqtt")
 public class MqttConfig {
 
 
@@ -41,7 +41,12 @@ public class MqttConfig {
     /**
      * 默认的topic，可指定订阅或推送
     **/
-    private String defaultTopic;
+    private String defaultReceiveTopic;
+
+    /**
+     * 默认的topic，可指定订阅或推送
+     **/
+    private String defaultSenderTopic;
     
     /**
      * 超时时间
