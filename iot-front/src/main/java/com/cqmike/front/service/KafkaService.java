@@ -2,8 +2,7 @@ package com.cqmike.front.service;
 
 import com.cqmike.core.util.JsonUtils;
 import com.cqmike.front.config.Message;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
@@ -20,10 +19,9 @@ import javax.annotation.Resource;
  * @Date: 2020/3/6 22:13
  * @Version: 1.0
  **/
+@Slf4j
 @Component
 public class KafkaService  {
-
-    private static final Logger log = LoggerFactory.getLogger(KafkaService.class);
 
     @Resource
     private KafkaTemplate<String, String> kafkaTemplate;

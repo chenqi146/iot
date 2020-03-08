@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 /**
  * @program: iot
  * @Interface: MqttSender
- * @Description: mqtt发送
+ * @Description: mqtt发送  todo 可能还需要再封装一层  日志打印和异常、成功处理
  * @Author: chen qi
  * @Date: 2020/3/3 22:09
  * @Version: 1.0
