@@ -31,4 +31,5 @@ public class Const {
     public static final AttributeKey<Connection> CONNECTION = AttributeKey
             .valueOf("connection");
 
+    public static final int DEVICE_DATA_MIN_LENGTH = 10;
 }

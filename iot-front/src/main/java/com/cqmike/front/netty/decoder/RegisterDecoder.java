@@ -10,6 +10,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
+import javax.script.ScriptException;
 import java.net.InetSocketAddress;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class RegisterDecoder extends ByteToMessageDecoder {
 
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> in) {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> in) throws ScriptException {
 
         byteBuf.retain();
         int readableBytesLength = byteBuf.readableBytes();
