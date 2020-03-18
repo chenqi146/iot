@@ -2,11 +2,13 @@ package com.cqmike.front.netty.decoder;
 
 import cn.hutool.core.util.HexUtil;
 import cn.hutool.core.util.StrUtil;
-import com.cqmike.asset.entity.ProductProperty;
 import com.cqmike.asset.form.DeviceForm;
 import com.cqmike.asset.form.ProductForm;
+import com.cqmike.asset.form.ProductPropertyForm;
 import com.cqmike.asset.form.front.DeviceFormForFront;
 import com.cqmike.core.util.JsonUtils;
+import com.cqmike.front.form.AnalyseDataDTO;
+import com.cqmike.front.netty.CompiledScriptMap;
 import com.cqmike.front.netty.Connection;
 import com.cqmike.front.netty.Const;
 import io.netty.buffer.ByteBuf;
@@ -18,7 +20,6 @@ import org.springframework.util.StringUtils;
 
 import javax.script.Bindings;
 import javax.script.CompiledScript;
-import javax.script.ScriptContext;
 import javax.script.ScriptException;
 import java.util.List;
 import java.util.Map;
@@ -93,30 +94,33 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
         }
 
         String dataHexStr = HexUtil.encodeHexStr(dataBytes);
-        String result = scriptExecute(connection, dataHexStr, productId);
+        String result = scriptExecute(dataHexStr, productId);
         if (StringUtils.isEmpty(result)) {
             return;
         }
 
         //todo 产品数据对应
-        Map<String, List<ProductProperty>> propertyMap = deviceFormForFront.getPropertyMap();
+        Map<String, List<ProductPropertyForm>> propertyMap = deviceFormForFront.getPropertyMap();
         if (CollectionUtils.isEmpty(propertyMap)) {
             return;
         }
-        List<ProductProperty> productProperties = propertyMap.get(productId);
+        List<ProductPropertyForm> productProperties = propertyMap.get(productId);
         if (CollectionUtils.isEmpty(productProperties)) {
             return;
         }
-        Map<String, Object> parse = JsonUtils.parse(result, Map.class);
-        for (ProductProperty productProperty : productProperties) {
-            //todo 根据属性标识符找对应属性解析json
+        Map<String, String> parse = JsonUtils.parse(result, Map.class);
+        for (ProductPropertyForm productProperty : productProperties) {
+            //todo 根据属性标识符找对应属性解析json  现阶段直接返回  后期数据校验和格式修正
+            String identifier = productProperty.getIdentifier();
+            Object o = parse.get(identifier);
         }
 
-        list.add(result);
+        AnalyseDataDTO dto = new AnalyseDataDTO(deviceSn, result);
+        list.add(dto);
 
     }
 
-    private String scriptExecute(Connection connection, String dataHexStr, String productId) throws ScriptException {
+    private String scriptExecute(String dataHexStr, String productId) throws ScriptException {
 
         // 十六进制字符串
         boolean hexNumber = HexUtil.isHexNumber(dataHexStr);
@@ -126,11 +130,8 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
         String[] dataHexStrArray = StrUtil.split(dataHexStr, 2);
 
         // 获取已编译的js
-        Map<String, CompiledScript> scriptMap = connection.getScriptMap();
-        CompiledScript script = scriptMap.get(productId);
-        ScriptContext context = connection.getContext();
-
-        Bindings bindings = context.getBindings(ScriptContext.ENGINE_SCOPE);
+        CompiledScript script = CompiledScriptMap.get(productId);
+        Bindings bindings = CompiledScriptMap.getBindings();
         bindings.put("data", dataHexStrArray);
         String result = (String) script.eval(bindings);
 

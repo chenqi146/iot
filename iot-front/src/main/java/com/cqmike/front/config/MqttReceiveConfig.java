@@ -114,7 +114,7 @@ public class MqttReceiveConfig {
             String topic = Objects.requireNonNull(message.getHeaders().get(TOPIC_KEY)).toString();
             String payload = String.valueOf(message.getPayload());
             log.info("topic: {}, data: {}", topic, payload);
-            //todo 处理消息
+            //todo 处理消息  mqtt连接设备解析 组织好的json
         };
     }
 }

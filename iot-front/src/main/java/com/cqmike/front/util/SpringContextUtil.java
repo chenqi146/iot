@@ -41,8 +41,12 @@ public class SpringContextUtil implements ApplicationContextAware {
      * @throws BeansException
      * 从静态变量ApplicationContext中取得Bean, 自动转型为所赋值对象的类型.
      */
-    public static Object getBean(String beanName) throws BeansException {
-        return applicationContext.getBean(beanName);
+    public static <T> T getBean(String beanName) throws BeansException {
+        return (T) applicationContext.getBean(beanName);
+    }
+
+    public static <T> T getBean(Class<T> tClass) {
+        return applicationContext.getBean(tClass);
     }
 
     public static Object getMessage(String key) {
