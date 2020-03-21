@@ -1,5 +1,6 @@
 package com.cqmike.front.config;
 
+import com.cqmike.core.util.JsonUtils;
 import lombok.Data;
 
 import java.util.Date;
@@ -20,9 +21,9 @@ public class Message {
     private String msg;
     private Date date;
 
-    public Message(String msg) {
+    public Message(Object msg) {
         this.date = new Date();
         this.id = UUID.randomUUID().toString();
-        this.msg = msg;
+        this.msg = JsonUtils.toJson(msg);
     }
 }

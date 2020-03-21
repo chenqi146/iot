@@ -1,4 +1,4 @@
-package com.cqmike.front.netty;
+package com.cqmike.front.map;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 public class DeviceChannelRel {
 
-    public static final ConcurrentHashMap<String, Connection> manager = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Connection> manager = new ConcurrentHashMap<>();
 
     public static void addConnection(Connection connection) {
         synchronized (manager) {
@@ -22,8 +22,8 @@ public class DeviceChannelRel {
         }
     }
 
-    public static Connection getConnection(String no) {
-        return manager.get(no);
+    public static Connection getConnection(String sn) {
+        return manager.get(sn);
     }
 
     public static void removeConnection(Connection connection) {

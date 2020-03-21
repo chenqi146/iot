@@ -1,9 +1,11 @@
-package com.cqmike.front.netty;
+package com.cqmike.front.map;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.script.ScriptUtil;
-import org.springframework.stereotype.Component;
+import com.cqmike.asset.form.front.ParserFormForFront;
+import com.cqmike.core.exception.BusinessException;
+import com.cqmike.front.emnus.OperateTypeEnum;
 
-import javax.annotation.PostConstruct;
 import javax.script.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +18,6 @@ import java.util.Map;
  * @Date: 2020/3/10 20:22
  * @Version: 1.0
  **/
-@Component
 public class CompiledScriptMap {
 
     /**
@@ -32,11 +33,8 @@ public class CompiledScriptMap {
      */
     private static ScriptContext context = new SimpleScriptContext();
 
-    @PostConstruct
-    public void init() throws ScriptException {
+    public static void init(Map<String, String> analyseScriptMap) throws ScriptException {
 
-        //todo 调接口
-        Map<String, String> analyseScriptMap = new HashMap<>();
         compiledScriptMap = new HashMap<>(analyseScriptMap.size());
 
         for (Map.Entry<String, String> entry : analyseScriptMap.entrySet()) {
@@ -56,13 +54,43 @@ public class CompiledScriptMap {
         compiledScriptMap.remove(productId);
     }
 
+    private static void removeAll() {
+        compiledScriptMap.clear();
+    }
+
     public static CompiledScript get(String productId) {
         return compiledScriptMap.get(productId);
     }
 
-    // todo 维护
     public static void put(String productId, String script) throws ScriptException {
         compile(productId, script);
+    }
+
+    /**
+     * @param parserForm  脚本类
+     * @param operateType 操作类型
+     */
+    public static void update(ParserFormForFront parserForm, OperateTypeEnum operateType) throws ScriptException {
+
+        if (CollectionUtil.isEmpty(compiledScriptMap)) {
+            return;
+        }
+
+        switch (operateType) {
+            case UPDATE:
+            case CREATE:
+                String script = parserForm.getScript();
+                put(parserForm.getProductId(), script);
+                break;
+            case DELETE:
+                removeCompiledScript(parserForm.getProductId());
+                break;
+            case DELETE_ALL:
+                removeAll();
+                break;
+            default:
+                throw new BusinessException("没有对应的枚举类型" + operateType);
+        }
     }
 
     public static Bindings getBindings() {

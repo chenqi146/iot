@@ -1,5 +1,6 @@
 package com.cqmike.front.netty;
 
+import com.cqmike.front.map.Connection;
 import io.netty.util.AttributeKey;
 
 /**

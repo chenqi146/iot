@@ -2,14 +2,15 @@ package com.cqmike.front.netty.decoder;
 
 import cn.hutool.core.util.HexUtil;
 import cn.hutool.core.util.StrUtil;
+import com.cqmike.asset.enums.ProductTypeEnum;
 import com.cqmike.asset.form.DeviceForm;
 import com.cqmike.asset.form.ProductForm;
 import com.cqmike.asset.form.ProductPropertyForm;
 import com.cqmike.asset.form.front.DeviceFormForFront;
 import com.cqmike.core.util.JsonUtils;
 import com.cqmike.front.form.AnalyseDataDTO;
-import com.cqmike.front.netty.CompiledScriptMap;
-import com.cqmike.front.netty.Connection;
+import com.cqmike.front.map.CompiledScriptMap;
+import com.cqmike.front.map.Connection;
 import com.cqmike.front.netty.Const;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -43,7 +44,7 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
         int readableBytes = byteBuf.readableBytes();
         Connection connection = ctx.channel().attr(Const.CONNECTION).get();
         if (readableBytes <= Const.DEVICE_DATA_MIN_LENGTH) {
-            log.debug("ClientId为 {}, deviceSn为 {} 设备数据报小于设备上报最小长度", ctx.channel().id(), connection.getDeviceSn());
+            log.debug("ClientId为 ({}), deviceSn为 ({}) 设备数据报小于设备上报最小长度", ctx.channel().id(), connection.getDeviceSn());
             return;
         }
 
@@ -54,22 +55,13 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
         byteBuf.readBytes(dataBytes);
 
         DeviceFormForFront deviceFormForFront = connection.getDeviceFormForFront();
-        if (deviceFormForFront == null) {
-            log.debug("ClientId为 {}, deviceSn为 {}的通道的DeviceFormForFront为空", ctx.channel().id(), connection.getDeviceSn());
-            return;
-        }
-
         ProductForm currentProductForm = deviceFormForFront.getCurrentProductForm();
-        if (currentProductForm == null) {
-            log.debug("ClientId为 {}, deviceSn为 {}的通道的currentProductForm为空", ctx.channel().id(), connection.getDeviceSn());
-            return;
-        }
 
-        String type = currentProductForm.getType();
+        ProductTypeEnum type = currentProductForm.getType();
         String productId;
         String deviceSn = HexUtil.encodeHexStr(deviceSnBytes);
-        // todo 换成枚举 网关
-        if (type.equals("")) {
+
+        if (type == ProductTypeEnum.GATEWAY) {
 
             Map<String, DeviceForm> childDeviceFormMap = deviceFormForFront.getChildDeviceFormMap();
             if (CollectionUtils.isEmpty(childDeviceFormMap)) {
@@ -77,7 +69,7 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
             }
             DeviceForm form = childDeviceFormMap.get(deviceSn);
             if (form == null) {
-                log.debug("ClientId为 {}的通道，deviceId为 {}的设备没有对应的设备信息", ctx.channel().id(), deviceSn);
+                log.debug("ClientId为 ({})的通道，deviceId为 ({})的设备没有对应的设备信息", ctx.channel().id(), deviceSn);
                 return;
             }
             productId = form.getProductId();
@@ -85,7 +77,7 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
         } else {
 
             if (!deviceSn.equals(connection.getDeviceSn())) {
-                log.error("ClientId为 {}的设备非网关, 且数据报deviceSn为{}, 通道deviceSn为{}, 两者不相等",ctx.channel().id(),
+                log.error("ClientId为 ({})的设备非网关, 且数据报deviceSn为({}), 通道deviceSn为({}), 两者不相等",ctx.channel().id(),
                         deviceSn, connection.getDeviceSn());
                 return;
             }
@@ -115,7 +107,7 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
             Object o = parse.get(identifier);
         }
 
-        AnalyseDataDTO dto = new AnalyseDataDTO(deviceSn, result);
+        AnalyseDataDTO dto = new AnalyseDataDTO(deviceSn, productId, result);
         list.add(dto);
 
     }
@@ -136,7 +128,7 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
         String result = (String) script.eval(bindings);
 
         if (StringUtils.isEmpty(result)) {
-            log.error("productId为{}的产品解析数据为空", productId);
+            log.error("productId为({})的产品解析数据为空", productId);
             return null;
         }
         return result;

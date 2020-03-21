@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 public class AnalyseDataDTO {
 
     private String deviceSn;
+    private String productId;
 
     private String data;
 }
