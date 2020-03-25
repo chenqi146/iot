@@ -1,0 +1,23 @@
+mock:
+  netty:
+    server:
+      host: localhost
+      port: 8088
+      count: 10
+spring:
+  cloud:
+    consul:
+      discovery:
+        instance-id: ${spring.application.name}-${server.port}
+        health-check-interval: 10s
+        tags: dev
+        register: true
+        register-health-check: true
+        heartbeat:
+          enabled: true
+      port: 8500
+      host: 121.36.54.71
+  application:
+    name: iot-mock
+server:
+  port: 8088
