@@ -16,8 +16,6 @@ import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
-import java.util.Objects;
-
 /**
  * @program: iot
  * @ClassName: MqttSenderConfig
@@ -31,10 +29,7 @@ public class MqttReceiveConfig {
 
     private static final Logger log = LoggerFactory.getLogger(MqttReceiveConfig.class);
 
-    /**
-     *  获取topic的key
-    **/
-    private final static String TOPIC_KEY = "mqtt_receivedTopic";
+
 
     public final static String CHANNEL_NAME_OUT = "mqttOutboundChannel";
 
@@ -107,14 +102,4 @@ public class MqttReceiveConfig {
         return adapter;
     }
 
-    @Bean
-    @ServiceActivator(inputChannel = "mqttInboundChannel")
-    public MessageHandler handler() {
-        return message -> {
-            String topic = Objects.requireNonNull(message.getHeaders().get(TOPIC_KEY)).toString();
-            String payload = String.valueOf(message.getPayload());
-            log.info("topic: ({}), data: ({})", topic, payload);
-            //todo 处理消息  mqtt连接设备解析 组织好的json
-        };
-    }
 }

@@ -1,6 +1,6 @@
 package com.cqmike.front.map;
 
-import com.cqmike.asset.form.front.DeviceFormForFront;
+import com.cqmike.common.front.form.DeviceFormForFront;
 import com.cqmike.front.netty.Const;
 import io.netty.channel.Channel;
 import lombok.Data;

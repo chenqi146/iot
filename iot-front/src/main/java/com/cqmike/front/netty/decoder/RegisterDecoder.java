@@ -1,7 +1,7 @@
 package com.cqmike.front.netty.decoder;
 
 import cn.hutool.core.util.HexUtil;
-import com.cqmike.asset.form.front.DeviceFormForFront;
+import com.cqmike.common.front.form.DeviceFormForFront;
 import com.cqmike.asset.service.DeviceService;
 import com.cqmike.front.map.Connection;
 import com.cqmike.front.netty.Const;

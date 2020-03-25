@@ -1,9 +1,9 @@
 package com.cqmike.front.map;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.cqmike.asset.form.front.RuleFormForFront;
+import com.cqmike.common.front.enums.OperateTypeEnum;
+import com.cqmike.common.front.form.RuleFormForFront;
 import com.cqmike.core.exception.BusinessException;
-import com.cqmike.front.emnus.OperateTypeEnum;
 
 import java.util.*;
 

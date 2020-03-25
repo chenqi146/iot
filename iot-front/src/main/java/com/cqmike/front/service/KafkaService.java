@@ -1,6 +1,6 @@
 package com.cqmike.front.service;
 
-import com.cqmike.front.config.Message;
+import com.cqmike.common.dto.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;

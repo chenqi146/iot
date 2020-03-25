@@ -1,6 +1,6 @@
 package com.cqmike.front.schedule;
 
-import com.cqmike.asset.form.front.DeviceFormForFront;
+import com.cqmike.common.front.form.DeviceFormForFront;
 import com.cqmike.asset.service.DeviceService;
 import com.cqmike.front.map.Connection;
 import com.cqmike.front.map.DeviceChannelRel;

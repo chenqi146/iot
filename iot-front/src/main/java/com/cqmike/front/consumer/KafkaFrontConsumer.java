@@ -1,14 +1,15 @@
 package com.cqmike.front.consumer;
 
 import cn.hutool.core.util.StrUtil;
-import com.cqmike.asset.form.ProductPropertyParserForm;
-import com.cqmike.asset.form.front.RuleFormForFront;
 import com.cqmike.asset.service.ProductPropertyParserService;
 import com.cqmike.asset.service.RuleService;
+import com.cqmike.common.dto.Message;
+import com.cqmike.common.constant.Constant;
+import com.cqmike.common.dto.RuleScriptDTO;
+import com.cqmike.common.front.enums.OperateTypeEnum;
+import com.cqmike.common.front.form.RuleFormForFront;
+import com.cqmike.common.platform.form.ProductPropertyParserForm;
 import com.cqmike.core.util.JsonUtils;
-import com.cqmike.front.config.Message;
-import com.cqmike.front.emnus.OperateTypeEnum;
-import com.cqmike.front.form.RuleScriptDTO;
 import com.cqmike.front.map.CompiledScriptMap;
 import com.cqmike.front.map.RuleFormMap;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -38,9 +39,6 @@ public class KafkaFrontConsumer implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaFrontConsumer.class);
 
-    private final static String UPDATE_RULE = "frontUpdateRule";
-    private final static String UPDATE_SCRIPT = "frontUpdateScript";
-
     @Resource
     private RuleService ruleService;
 
@@ -62,7 +60,7 @@ public class KafkaFrontConsumer implements ApplicationRunner {
         CompiledScriptMap.init(scriptMap);
     }
 
-    @KafkaListener(topics = {UPDATE_RULE, UPDATE_SCRIPT})
+    @KafkaListener(topics = {Constant.UPDATE_RULE, Constant.UPDATE_SCRIPT})
     public void handle(ConsumerRecord<String, Message> record) throws ScriptException {
         log.info("methodName: handle ----- params: record = [{}]", record);
         if (record == null) {
@@ -78,9 +76,9 @@ public class KafkaFrontConsumer implements ApplicationRunner {
         // 根据操作类型 动态维护 规则和解析脚本
         RuleScriptDTO dto = JsonUtils.parse(msg, RuleScriptDTO.class);
         OperateTypeEnum operateType = dto.getOperateType();
-        if (UPDATE_RULE.equals(topic)) {
+        if (Constant.UPDATE_RULE.equals(topic)) {
             RuleFormMap.update(dto.getRuleForm(), operateType);
-        } else if (UPDATE_SCRIPT.equals(topic)) {
+        } else if (Constant.UPDATE_SCRIPT.equals(topic)) {
             CompiledScriptMap.update(dto.getParserForm(), operateType);
         }
 
