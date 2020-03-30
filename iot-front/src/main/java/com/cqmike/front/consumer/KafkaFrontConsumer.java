@@ -1,15 +1,15 @@
 package com.cqmike.front.consumer;
 
 import cn.hutool.core.util.StrUtil;
-import com.cqmike.asset.service.ProductPropertyParserService;
-import com.cqmike.asset.service.RuleService;
-import com.cqmike.common.dto.Message;
 import com.cqmike.common.constant.Constant;
+import com.cqmike.common.dto.Message;
 import com.cqmike.common.dto.RuleScriptDTO;
 import com.cqmike.common.front.enums.OperateTypeEnum;
 import com.cqmike.common.front.form.RuleFormForFront;
 import com.cqmike.common.platform.form.ProductPropertyParserForm;
+import com.cqmike.core.result.ReturnForm;
 import com.cqmike.core.util.JsonUtils;
+import com.cqmike.front.client.PlatformClient;
 import com.cqmike.front.map.CompiledScriptMap;
 import com.cqmike.front.map.RuleFormMap;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -40,10 +40,7 @@ public class KafkaFrontConsumer implements ApplicationRunner {
     private static final Logger log = LoggerFactory.getLogger(KafkaFrontConsumer.class);
 
     @Resource
-    private RuleService ruleService;
-
-    @Resource
-    private ProductPropertyParserService parserService;
+    private PlatformClient platformClient;
 
     /**
      *  启动的时候初始化 规则和脚本
@@ -52,9 +49,11 @@ public class KafkaFrontConsumer implements ApplicationRunner {
      */
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        Map<String, Map<String, RuleFormForFront>> ruleFrontMap = ruleService.findRuleFrontList();
+        ReturnForm<Map<String, Map<String, RuleFormForFront>>> ruleReturnForm = platformClient.findRuleFrontList();
+        Map<String, Map<String, RuleFormForFront>> ruleFrontMap = ruleReturnForm.getMessage();
         RuleFormMap.init(ruleFrontMap);
-        List<ProductPropertyParserForm> parserForms = parserService.listAll();
+        ReturnForm<List<ProductPropertyParserForm>> parserReturnForm = platformClient.listAll();
+        List<ProductPropertyParserForm> parserForms = parserReturnForm.getMessage();
         Map<String, String> scriptMap = parserForms.stream().collect(Collectors
                 .toMap(ProductPropertyParserForm::getProductId, ProductPropertyParserForm::getScript));
         CompiledScriptMap.init(scriptMap);

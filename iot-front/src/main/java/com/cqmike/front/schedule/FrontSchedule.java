@@ -1,7 +1,8 @@
 package com.cqmike.front.schedule;
 
 import com.cqmike.common.front.form.DeviceFormForFront;
-import com.cqmike.asset.service.DeviceService;
+import com.cqmike.core.result.ReturnForm;
+import com.cqmike.front.client.PlatformClient;
 import com.cqmike.front.map.Connection;
 import com.cqmike.front.map.DeviceChannelRel;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,18 +23,19 @@ import java.util.List;
 public class FrontSchedule {
 
     @Resource
-    private DeviceService deviceService;
+    private PlatformClient platformClient;
 
     /**
-     *  todo  十秒拉取一次接口   后续想想推送方式
+     *  获取设备信息
      */
     @Scheduled(fixedRate = 10 * 1000)
     public void getDeviceFormForFront() {
         List<Connection> connections = DeviceChannelRel.getConnections();
         for (Connection connection : connections) {
             String deviceSn = connection.getDeviceSn();
-            DeviceFormForFront form = deviceService.findDeviceForFrontBySn(deviceSn);
-            connection.setDeviceFormForFront(form);
+            ReturnForm<DeviceFormForFront> form = platformClient.findDeviceForFrontBySn(deviceSn);
+            DeviceFormForFront message = form.getMessage();
+            connection.setDeviceFormForFront(message);
         }
     }
 

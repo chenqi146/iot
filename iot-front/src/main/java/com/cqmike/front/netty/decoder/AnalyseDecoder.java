@@ -91,7 +91,6 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
             return;
         }
 
-        //todo 产品数据对应
         Map<String, List<ProductPropertyForm>> propertyMap = deviceFormForFront.getPropertyMap();
         if (CollectionUtils.isEmpty(propertyMap)) {
             return;

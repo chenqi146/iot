@@ -1,8 +1,10 @@
 package com.cqmike.front.netty.decoder;
 
 import cn.hutool.core.util.HexUtil;
+import cn.hutool.core.util.StrUtil;
 import com.cqmike.common.front.form.DeviceFormForFront;
-import com.cqmike.asset.service.DeviceService;
+import com.cqmike.core.result.ReturnForm;
+import com.cqmike.front.client.PlatformClient;
 import com.cqmike.front.map.Connection;
 import com.cqmike.front.netty.Const;
 import com.cqmike.front.service.KafkaService;
@@ -11,7 +13,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.List;
 @Slf4j
 public class RegisterDecoder extends ByteToMessageDecoder {
 
-    private DeviceService deviceService = SpringContextUtil.getBean(DeviceService.class);
+    private PlatformClient platformClient = SpringContextUtil.getBean(PlatformClient.class);
     private KafkaService kafkaService = SpringContextUtil.getBean(KafkaService.class);
     private static final String DEVICE_OFFLINE = "deviceOffline";
     private static final String DEVICE_ONLINE = "deviceOnline";
@@ -51,11 +52,12 @@ public class RegisterDecoder extends ByteToMessageDecoder {
             byte[] bytes = new byte[readableBytesLength];
             byteBuf.readBytes(bytes);
             String deviceSn = HexUtil.encodeHexStr(bytes);
-            if (StringUtils.isEmpty(deviceSn)) {
+            if (StrUtil.isEmpty(deviceSn)) {
                 return;
             }
 
-            DeviceFormForFront deviceForFront = deviceService.findDeviceForFrontBySn(deviceSn);
+            ReturnForm<DeviceFormForFront> returnForm = platformClient.findDeviceForFrontBySn(deviceSn);
+            DeviceFormForFront deviceForFront = returnForm.getMessage();
             if (deviceForFront == null) {
                 log.error("deviceSn(({}))没有对应的设备信息", deviceSn);
                 return;

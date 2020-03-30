@@ -41,6 +41,7 @@ public class DistributionDecoder extends ChannelInboundHandlerAdapter {
         kafkaService.asyncSendDataToKafkaTopic("deviceRecordData", dataJson);
         log.debug("数据推送到kafka——topic: deviceRecordData, 数据为: ({})", dataJson);
 
+        // todo 哪个中间件
         for (RuleFormForFront ruleForm : ruleFormList) {
             RuleTypeEnum ruleType = ruleForm.getRuleType();
             if (ruleType == RuleTypeEnum.CIRCULATION) {

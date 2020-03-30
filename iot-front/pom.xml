@@ -17,12 +17,6 @@
 
         <dependency>
             <groupId>com.cqmike</groupId>
-            <artifactId>iot-platform-asset</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.cqmike</groupId>
             <artifactId>iot-common</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -76,5 +70,13 @@
 
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

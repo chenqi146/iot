@@ -49,7 +49,7 @@ public class NettyServer {
 
     public void start() {
         try {
-            ChannelFuture channelFuture = bootstrap.bind(8088).sync();
+            ChannelFuture channelFuture = bootstrap.bind(8888).sync();
             channel = channelFuture.channel();
             channelFuture.channel().closeFuture().sync().addListener((ChannelFutureListener) channelFuture1 -> {
                 log.info(channelFuture1.channel().toString() + "链路关闭");

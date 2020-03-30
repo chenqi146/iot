@@ -3,6 +3,7 @@ package com.cqmike.front.util;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
@@ -14,6 +15,7 @@ import java.util.Locale;
  * @Date: 2020/3/6 22:17
  * @Version: 1.0
  **/
+@Component
 public class SpringContextUtil implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;
