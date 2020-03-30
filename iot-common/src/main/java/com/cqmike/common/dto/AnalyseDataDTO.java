@@ -1,4 +1,4 @@
-package com.cqmike.front.form;
+package com.cqmike.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

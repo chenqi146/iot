@@ -1,24 +1,20 @@
-package com.cqmike.front.emnus;
+package com.cqmike.common.platform.enums;
 
-import com.cqmike.asset.enums.BaseEnum;
+import com.cqmike.common.base.BaseEnum;
 
 /**
  * @program: iot
- * @EnumName: OperateTypeEnum
- * @Description: rule和js操作
+ * @EnumName: DeviceOperateTypeEnum
+ * @Description: 设备操作类型
  * @Author: chen qi
  * @Date: 2020/3/2 21:21
  * @Version: 1.0
  **/
-public enum OperateTypeEnum implements BaseEnum {
+public enum DeviceOperateTypeEnum implements BaseEnum {
     /**
      * 创建create
      */
     CREATE("创建"),
-    /**
-     * 删除全部
-     */
-    DELETE_ALL("删除全部"),
     /**
      * 删除
      */
@@ -30,7 +26,7 @@ public enum OperateTypeEnum implements BaseEnum {
 
     private final String msg;
 
-    private OperateTypeEnum(String msg) {
+    private DeviceOperateTypeEnum(String msg) {
         this.msg = msg;
     }
 

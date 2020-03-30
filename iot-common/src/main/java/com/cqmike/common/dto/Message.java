@@ -1,4 +1,4 @@
-package com.cqmike.front.config;
+package com.cqmike.common.dto;
 
 import com.cqmike.core.util.JsonUtils;
 import lombok.Data;
