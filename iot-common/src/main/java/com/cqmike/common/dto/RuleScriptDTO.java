@@ -3,10 +3,6 @@ package com.cqmike.common.dto;
 import com.cqmike.common.front.enums.OperateTypeEnum;
 import com.cqmike.common.front.form.ParserFormForFront;
 import com.cqmike.common.front.form.RuleFormForFront;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * @program: iot
@@ -16,14 +12,52 @@ import lombok.NoArgsConstructor;
  * @Date: 2020/3/19 20:38
  * @Version: 1.0
  **/
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class RuleScriptDTO {
 
     private OperateTypeEnum operateType;
     private RuleFormForFront ruleForm;
     private ParserFormForFront parserForm;
     private String productId;
+
+    public RuleScriptDTO() {
+    }
+
+    public RuleScriptDTO(OperateTypeEnum operateType, RuleFormForFront ruleForm, ParserFormForFront parserForm, String productId) {
+        this.operateType = operateType;
+        this.ruleForm = ruleForm;
+        this.parserForm = parserForm;
+        this.productId = productId;
+    }
+
+    public OperateTypeEnum getOperateType() {
+        return operateType;
+    }
+
+    public void setOperateType(OperateTypeEnum operateType) {
+        this.operateType = operateType;
+    }
+
+    public RuleFormForFront getRuleForm() {
+        return ruleForm;
+    }
+
+    public void setRuleForm(RuleFormForFront ruleForm) {
+        this.ruleForm = ruleForm;
+    }
+
+    public ParserFormForFront getParserForm() {
+        return parserForm;
+    }
+
+    public void setParserForm(ParserFormForFront parserForm) {
+        this.parserForm = parserForm;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
 }

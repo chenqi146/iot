@@ -1,9 +1,11 @@
 package com.cqmike.front.netty.decoder;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.HexUtil;
 import cn.hutool.core.util.StrUtil;
 import com.cqmike.common.dto.AnalyseDataDTO;
 import com.cqmike.common.front.form.DeviceFormForFront;
+import com.cqmike.common.platform.enums.DataTypeEnum;
 import com.cqmike.common.platform.enums.ProductTypeEnum;
 import com.cqmike.common.platform.form.DeviceForm;
 import com.cqmike.common.platform.form.ProductForm;
@@ -12,16 +14,21 @@ import com.cqmike.core.util.JsonUtils;
 import com.cqmike.front.map.CompiledScriptMap;
 import com.cqmike.front.map.Connection;
 import com.cqmike.front.netty.Const;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.script.Bindings;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -33,9 +40,9 @@ import java.util.Map;
  * @Date: 2020/3/7 10:51
  * @Version: 1.0
  **/
-@Slf4j
 public class AnalyseDecoder extends ByteToMessageDecoder {
 
+    private static final Logger log = LoggerFactory.getLogger(AnalyseDecoder.class);
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) throws Exception {
@@ -54,14 +61,14 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
         byte[] dataBytes = new byte[readableBytes - Const.DEVICE_DATA_MIN_LENGTH];
         byteBuf.readBytes(dataBytes);
 
+        String deviceSn = HexUtil.encodeHexStr(deviceSnBytes);
         DeviceFormForFront deviceFormForFront = connection.getDeviceFormForFront();
         ProductForm currentProductForm = deviceFormForFront.getCurrentProductForm();
 
-        ProductTypeEnum type = currentProductForm.getType();
         String productId;
-        String deviceSn = HexUtil.encodeHexStr(deviceSnBytes);
+        ProductTypeEnum productType = currentProductForm.getType();
 
-        if (type == ProductTypeEnum.GATEWAY) {
+        if (productType == ProductTypeEnum.GATEWAY) {
 
             Map<String, DeviceForm> childDeviceFormMap = deviceFormForFront.getChildDeviceFormMap();
             if (CollectionUtils.isEmpty(childDeviceFormMap)) {
@@ -99,16 +106,42 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
         if (CollectionUtils.isEmpty(productProperties)) {
             return;
         }
-        Map<String, String> parse = JsonUtils.parse(result, Map.class);
-        for (ProductPropertyForm productProperty : productProperties) {
-            //todo 根据属性标识符找对应属性解析json  现阶段直接返回  后期数据校验和格式修正
-            String identifier = productProperty.getIdentifier();
-            Object o = parse.get(identifier);
+        Map<String, Object> parse = JsonUtils.parse(result, new TypeReference<Map<String, Object>>(){});
+
+        Map<String, Object> resultMap = getResultMapForVerify(deviceSn, parse, productProperties);
+        if (CollectionUtil.isEmpty(resultMap)) {
+            return;
         }
 
-        AnalyseDataDTO dto = new AnalyseDataDTO(deviceSn, productId, result);
+        AnalyseDataDTO dto = new AnalyseDataDTO(deviceSn, productId, resultMap);
         list.add(dto);
 
+    }
+
+    public static Map<String, Object> getResultMapForVerify(String deviceSn, Map<String, Object> result, List<ProductPropertyForm> productProperties) {
+        int errorSum = 0;
+        List<String> errorList = new ArrayList<>();
+
+        Map<String, Object> resultMap = Maps.newHashMap();
+        for (ProductPropertyForm productProperty : productProperties) {
+            // 根据属性标识符找对应属性解析json
+            String identifier = productProperty.getIdentifier();
+            Object o = result.get(identifier);
+            DataTypeEnum dataType = productProperty.getType();
+            boolean verify = dataType.verify(productProperty, o);
+            if (!verify) {
+                errorSum++;
+                errorList.add(identifier);
+            }
+            Class<?> aclass = dataType.getAclass();
+            Object value = dataType.transformValue(aclass, o);
+            resultMap.put(identifier, value);
+        }
+        if (errorSum > 0) {
+            log.error("({})的设备数据校验失败({})", deviceSn, JsonUtils.toJson(errorList));
+            return Collections.emptyMap();
+        }
+        return resultMap;
     }
 
     private String scriptExecute(String dataHexStr, String productId) throws ScriptException {

@@ -1,11 +1,11 @@
 package com.cqmike.common.platform.form;
+
+import com.cqmike.common.platform.enums.MiddleTypeEnum;
+import com.cqmike.common.platform.enums.RuleStatusEnum;
+import com.cqmike.common.platform.enums.RuleTypeEnum;
 import com.cqmike.core.form.BaseForm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * @program: 
@@ -15,11 +15,7 @@ import lombok.NoArgsConstructor;
  * @Date: 2020-16-01 16:24
  * @Version: 1.0
 **/
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @ApiModel(value = "RuleForm")
-@EqualsAndHashCode(callSuper = true)
 public class RuleForm extends BaseForm {
     /**
      * 产品id
@@ -28,10 +24,16 @@ public class RuleForm extends BaseForm {
     private String productId;
 
     /**
+     * 产品名称
+     */
+    @ApiModelProperty("产品名称")
+    private String productName;
+
+    /**
      * 中间件id
      */
-    @ApiModelProperty("中间件id")
-    private String middlewareId;
+    @ApiModelProperty("中间件类型")
+    private MiddleTypeEnum middlewareType;
 
     /**
      * 规则名称
@@ -43,7 +45,13 @@ public class RuleForm extends BaseForm {
      * 规则类型   流转
      */
     @ApiModelProperty("规则类型   流转")
-    private String type;
+    private RuleTypeEnum type;
+
+    /**
+     * 规则类型   流转
+     */
+    @ApiModelProperty("规则类型名称   流转")
+    private String typeName;
 
     /**
      * 规则描述
@@ -55,7 +63,13 @@ public class RuleForm extends BaseForm {
      * 状态
      */
     @ApiModelProperty("状态")
-    private String status;
+    private RuleStatusEnum status;
+
+    /**
+     * 状态名称
+     */
+    @ApiModelProperty("状态名称")
+    private String statusName;
 
     /**
      * TOPIC
@@ -63,5 +77,88 @@ public class RuleForm extends BaseForm {
     @ApiModelProperty("TOPIC")
     private String topic;
 
+    public RuleForm() {
+    }
 
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public MiddleTypeEnum getMiddlewareType() {
+        return middlewareType;
+    }
+
+    public void setMiddlewareType(MiddleTypeEnum middlewareType) {
+        this.middlewareType = middlewareType;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public RuleTypeEnum getType() {
+        return type;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public RuleStatusEnum getStatus() {
+        return status;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public void setType(RuleTypeEnum type) {
+        this.type = type;
+        this.typeName = type.getMsg();
+    }
+
+    public void setStatus(RuleStatusEnum status) {
+        this.status = status;
+        this.statusName = status.getMsg();
+    }
 }

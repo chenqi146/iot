@@ -3,8 +3,8 @@ package com.cqmike.front.map;
 import com.cqmike.common.front.form.DeviceFormForFront;
 import com.cqmike.front.netty.Const;
 import io.netty.channel.Channel;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @program: iot
@@ -14,9 +14,9 @@ import lombok.extern.slf4j.Slf4j;
  * @Date: 2020/3/7 15:56
  * @Version: 1.0
  **/
-@Slf4j
-@Data
 public class Connection {
+
+    private static final Logger log = LoggerFactory.getLogger(Connection.class);
 
     private Channel channel;
 
@@ -43,5 +43,29 @@ public class Connection {
 
     public boolean containsConnection(String deviceSn) {
         return DeviceChannelRel.containsConnection(deviceSn);
+    }
+
+    public Channel getChannel() {
+        return channel;
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
+
+    public String getDeviceSn() {
+        return deviceSn;
+    }
+
+    public void setDeviceSn(String deviceSn) {
+        this.deviceSn = deviceSn;
+    }
+
+    public DeviceFormForFront getDeviceFormForFront() {
+        return deviceFormForFront;
+    }
+
+    public void setDeviceFormForFront(DeviceFormForFront deviceFormForFront) {
+        this.deviceFormForFront = deviceFormForFront;
     }
 }

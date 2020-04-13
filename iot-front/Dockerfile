@@ -1,0 +1,11 @@
+FROM openjdk:8-alpine
+MAINTAINER cq
+VOLUME /tmp
+ARG JAR_FILE
+COPY ${JAR_FILE} app.jar
+RUN /bin/sh -c 'touch /app.jar'
+ENV LANG C.UTF-8
+ENV TZ=Asia/Shanghai
+EXPOSE 58081
+EXPOSE 8081
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=50001", "/app.jar"]

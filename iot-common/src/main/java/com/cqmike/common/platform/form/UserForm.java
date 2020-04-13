@@ -3,10 +3,6 @@ import com.cqmike.core.form.BaseForm;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * @program: 
@@ -16,11 +12,7 @@ import lombok.NoArgsConstructor;
  * @Date: 2020-17-22 17:58
  * @Version: 1.0
 **/
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @ApiModel(value = "UserForm")
-@EqualsAndHashCode(callSuper = true)
 public class UserForm extends BaseForm {
     /**
      * 姓名
@@ -47,5 +39,38 @@ public class UserForm extends BaseForm {
     @ApiModelProperty("邮箱")
     private String email;
 
+    public UserForm() {
+    }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

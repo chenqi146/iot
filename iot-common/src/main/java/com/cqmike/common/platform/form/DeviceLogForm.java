@@ -15,11 +15,7 @@ import lombok.NoArgsConstructor;
  * @Date: 2020-16-01 16:11
  * @Version: 1.0
 **/
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @ApiModel(value = "DeviceLogForm")
-@EqualsAndHashCode(callSuper = true)
 public class DeviceLogForm extends BaseForm {
     /**
      * 设备id
@@ -39,5 +35,30 @@ public class DeviceLogForm extends BaseForm {
     @ApiModelProperty("描述")
     private String description;
 
+    public DeviceLogForm() {
+    }
 
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

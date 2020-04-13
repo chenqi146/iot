@@ -1,10 +1,6 @@
 package com.cqmike.common.front.form;
 
 import com.cqmike.core.form.BaseForm;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * @program: iot
@@ -14,10 +10,6 @@ import lombok.NoArgsConstructor;
  * @Date: 2020/3/21 10:02
  * @Version: 1.0
  **/
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 public class ParserFormForFront extends BaseForm {
 
     /**
@@ -34,4 +26,28 @@ public class ParserFormForFront extends BaseForm {
      * 脚本类型  javascript
      */
     private String scriptType;
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public String getScript() {
+        return script;
+    }
+
+    public void setScript(String script) {
+        this.script = script;
+    }
+
+    public String getScriptType() {
+        return scriptType;
+    }
+
+    public void setScriptType(String scriptType) {
+        this.scriptType = scriptType;
+    }
 }

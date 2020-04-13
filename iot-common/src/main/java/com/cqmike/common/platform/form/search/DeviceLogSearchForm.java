@@ -1,13 +1,10 @@
 package com.cqmike.common.platform.form.search;
 
-import java.util.Date;
+import com.cqmike.core.form.BaseSearchForm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import com.cqmike.core.form.BaseSearchForm;
+
+import java.util.Date;
 
 /**
  * @program: 
@@ -17,11 +14,7 @@ import com.cqmike.core.form.BaseSearchForm;
  * @Date: 2020-16-01 16:17
  * @Version: 1.0
 **/
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @ApiModel(value = "DeviceLogSearchForm")
-@EqualsAndHashCode(callSuper = true)
 public class DeviceLogSearchForm extends BaseSearchForm {
 
     /**
@@ -66,5 +59,59 @@ public class DeviceLogSearchForm extends BaseSearchForm {
     @ApiModelProperty("修改时间")
     private Date updateTime;
 
+    public String getDeviceId() {
+        return deviceId;
+    }
 
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCreateUserName() {
+        return createUserName;
+    }
+
+    public void setCreateUserName(String createUserName) {
+        this.createUserName = createUserName;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getUpdateUserName() {
+        return updateUserName;
+    }
+
+    public void setUpdateUserName(String updateUserName) {
+        this.updateUserName = updateUserName;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 }

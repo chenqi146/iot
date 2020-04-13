@@ -2,6 +2,7 @@ package com.cqmike.front.client;
 
 import com.cqmike.common.front.form.DeviceFormForFront;
 import com.cqmike.common.front.form.RuleFormForFront;
+import com.cqmike.common.platform.form.ProductPropertyForm;
 import com.cqmike.common.platform.form.ProductPropertyParserForm;
 import com.cqmike.core.result.ReturnForm;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -18,7 +19,7 @@ import java.util.Map;
  * @Date: 2020/3/29 11:09
  * @Version: 1.0
  **/
-@FeignClient(name = "iot-platform")
+@FeignClient(name = "${feign.platform.url}", url = "${feign.platform.url}")
 public interface PlatformClient {
 
     /**
@@ -36,6 +37,13 @@ public interface PlatformClient {
      */
     @GetMapping("/feign/listAll")
     ReturnForm<List<ProductPropertyParserForm>> listAll();
+
+    /**
+     *  查询所有
+     * @return
+     */
+    @GetMapping("/feign/listAll")
+    ReturnForm<Map<String, Map<String,ProductPropertyForm>>> findPropertyList();
 
 
     /**

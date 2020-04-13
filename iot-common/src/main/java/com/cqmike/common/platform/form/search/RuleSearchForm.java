@@ -1,12 +1,11 @@
 package com.cqmike.common.platform.form.search;
 
+import com.cqmike.common.platform.enums.MiddleTypeEnum;
+import com.cqmike.common.platform.enums.RuleStatusEnum;
+import com.cqmike.common.platform.enums.RuleTypeEnum;
 import com.cqmike.core.form.BaseSearchForm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -18,11 +17,7 @@ import java.util.Date;
  * @Date: 2020-16-01 16:24
  * @Version: 1.0
 **/
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @ApiModel(value = "RuleSearchForm")
-@EqualsAndHashCode(callSuper = true)
 public class RuleSearchForm extends BaseSearchForm {
 
     /**
@@ -34,8 +29,8 @@ public class RuleSearchForm extends BaseSearchForm {
     /**
      * 中间件id
      */
-    @ApiModelProperty("中间件id")
-    private String middlewareId;
+    @ApiModelProperty("中间件类型")
+    private MiddleTypeEnum middlewareType;
 
     /**
      * 规则名称
@@ -47,7 +42,7 @@ public class RuleSearchForm extends BaseSearchForm {
      * 规则类型   流转
      */
     @ApiModelProperty("规则类型   流转")
-    private String type;
+    private RuleTypeEnum type;
 
     /**
      * 规则描述
@@ -59,7 +54,7 @@ public class RuleSearchForm extends BaseSearchForm {
      * 状态
      */
     @ApiModelProperty("状态")
-    private String status;
+    private RuleStatusEnum status;
 
     /**
      * TOPIC
@@ -91,5 +86,91 @@ public class RuleSearchForm extends BaseSearchForm {
     @ApiModelProperty("修改时间")
     private Date updateTime;
 
+    public String getProductId() {
+        return productId;
+    }
 
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public MiddleTypeEnum getMiddlewareType() {
+        return middlewareType;
+    }
+
+    public void setMiddlewareType(MiddleTypeEnum middlewareType) {
+        this.middlewareType = middlewareType;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public RuleTypeEnum getType() {
+        return type;
+    }
+
+    public void setType(RuleTypeEnum type) {
+        this.type = type;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public RuleStatusEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(RuleStatusEnum status) {
+        this.status = status;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public String getCreateUserName() {
+        return createUserName;
+    }
+
+    public void setCreateUserName(String createUserName) {
+        this.createUserName = createUserName;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getUpdateUserName() {
+        return updateUserName;
+    }
+
+    public void setUpdateUserName(String updateUserName) {
+        this.updateUserName = updateUserName;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 }

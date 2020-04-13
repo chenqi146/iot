@@ -2,19 +2,19 @@ package com.cqmike.front;
 
 import com.cqmike.front.netty.NettyServer;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
+import javax.annotation.PreDestroy;
+
 /**
  * @author chen qi
  */
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
-@SpringBootApplication
 @EnableFeignClients
 @EnableDiscoveryClient
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class IotFrontApplication {
 
     public static void main(String[] args) {
@@ -22,4 +22,8 @@ public class IotFrontApplication {
         NettyServer.getInstance().start();
     }
 
+    @PreDestroy
+    public void stop() throws InterruptedException {
+        NettyServer.getInstance().stop();
+    }
 }

@@ -2,10 +2,6 @@ package com.cqmike.common.platform.form;
 import com.cqmike.core.form.BaseForm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * @program: 
@@ -15,11 +11,7 @@ import lombok.NoArgsConstructor;
  * @Date: 2020-15-07 15:38
  * @Version: 1.0
 **/
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @ApiModel(value = "ProductPropertyParserForm")
-@EqualsAndHashCode(callSuper = true)
 public class ProductPropertyParserForm extends BaseForm {
     /**
      * 产品id
@@ -39,5 +31,30 @@ public class ProductPropertyParserForm extends BaseForm {
     @ApiModelProperty("脚本类型  javascript")
     private String scriptType;
 
+    public ProductPropertyParserForm() {
+    }
 
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public String getScript() {
+        return script;
+    }
+
+    public void setScript(String script) {
+        this.script = script;
+    }
+
+    public String getScriptType() {
+        return scriptType;
+    }
+
+    public void setScriptType(String scriptType) {
+        this.scriptType = scriptType;
+    }
 }

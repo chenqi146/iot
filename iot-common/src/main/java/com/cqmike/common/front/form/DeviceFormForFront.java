@@ -4,10 +4,6 @@ import com.cqmike.common.platform.form.DeviceForm;
 import com.cqmike.common.platform.form.ProductForm;
 import com.cqmike.common.platform.form.ProductPropertyForm;
 import com.cqmike.core.form.BaseForm;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
@@ -20,10 +16,6 @@ import java.util.Map;
  * @Date: 2020/3/7 16:25
  * @Version: 1.0
  **/
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 public class DeviceFormForFront extends BaseForm {
 
     private DeviceForm currentDeviceForm;
@@ -41,4 +33,35 @@ public class DeviceFormForFront extends BaseForm {
      */
     private Map<String, List<ProductPropertyForm>> propertyMap;
 
+    public DeviceForm getCurrentDeviceForm() {
+        return currentDeviceForm;
+    }
+
+    public void setCurrentDeviceForm(DeviceForm currentDeviceForm) {
+        this.currentDeviceForm = currentDeviceForm;
+    }
+
+    public ProductForm getCurrentProductForm() {
+        return currentProductForm;
+    }
+
+    public void setCurrentProductForm(ProductForm currentProductForm) {
+        this.currentProductForm = currentProductForm;
+    }
+
+    public Map<String, DeviceForm> getChildDeviceFormMap() {
+        return childDeviceFormMap;
+    }
+
+    public void setChildDeviceFormMap(Map<String, DeviceForm> childDeviceFormMap) {
+        this.childDeviceFormMap = childDeviceFormMap;
+    }
+
+    public Map<String, List<ProductPropertyForm>> getPropertyMap() {
+        return propertyMap;
+    }
+
+    public void setPropertyMap(Map<String, List<ProductPropertyForm>> propertyMap) {
+        this.propertyMap = propertyMap;
+    }
 }

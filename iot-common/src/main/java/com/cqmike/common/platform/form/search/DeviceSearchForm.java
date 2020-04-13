@@ -21,11 +21,7 @@ import java.util.List;
  * @Date: 2020-19-24 19:42
  * @Version: 1.0
 **/
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @ApiModel(value = "DeviceSearchForm")
-@EqualsAndHashCode(callSuper = true)
 public class DeviceSearchForm extends BaseSearchForm {
 
     /**
@@ -70,8 +66,128 @@ public class DeviceSearchForm extends BaseSearchForm {
     @ApiModelProperty("设备最后上线时间")
     private Date lastOnlineTime;
 
+    /**
+     * 创建用户
+     */
+    @ApiModelProperty("创建用户")
+    private String createUserName;
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty("创建时间")
+    private Date createTime;
+
+    /**
+     * 修改用户
+     */
+    @ApiModelProperty("修改用户")
+    private String updateUserName;
+
+    /**
+     * 修改时间
+     */
+    @ApiModelProperty("修改时间")
+    private Date updateTime;
+
     @ApiModelProperty("设备id")
     @Query(value = QueryType.in, columnName = "id")
     private List<String> deviceIdList;
 
+
+    public Date getInstallationDate() {
+        return installationDate;
+    }
+
+    public void setInstallationDate(Date installationDate) {
+        this.installationDate = installationDate;
+    }
+
+    public String getInstallationLocation() {
+        return installationLocation;
+    }
+
+    public void setInstallationLocation(String installationLocation) {
+        this.installationLocation = installationLocation;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public String getSn() {
+        return sn;
+    }
+
+    public void setSn(String sn) {
+        this.sn = sn;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Date getLastOnlineTime() {
+        return lastOnlineTime;
+    }
+
+    public void setLastOnlineTime(Date lastOnlineTime) {
+        this.lastOnlineTime = lastOnlineTime;
+    }
+
+    public List<String> getDeviceIdList() {
+        return deviceIdList;
+    }
+
+    public void setDeviceIdList(List<String> deviceIdList) {
+        this.deviceIdList = deviceIdList;
+    }
+
+    public String getCreateUserName() {
+        return createUserName;
+    }
+
+    public void setCreateUserName(String createUserName) {
+        this.createUserName = createUserName;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getUpdateUserName() {
+        return updateUserName;
+    }
+
+    public void setUpdateUserName(String updateUserName) {
+        this.updateUserName = updateUserName;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 }

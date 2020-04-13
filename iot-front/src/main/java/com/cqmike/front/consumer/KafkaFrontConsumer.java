@@ -5,26 +5,16 @@ import com.cqmike.common.constant.Constant;
 import com.cqmike.common.dto.Message;
 import com.cqmike.common.dto.RuleScriptDTO;
 import com.cqmike.common.front.enums.OperateTypeEnum;
-import com.cqmike.common.front.form.RuleFormForFront;
-import com.cqmike.common.platform.form.ProductPropertyParserForm;
-import com.cqmike.core.result.ReturnForm;
 import com.cqmike.core.util.JsonUtils;
-import com.cqmike.front.client.PlatformClient;
 import com.cqmike.front.map.CompiledScriptMap;
 import com.cqmike.front.map.RuleFormMap;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import javax.script.ScriptException;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @program: iot
@@ -35,29 +25,9 @@ import java.util.stream.Collectors;
  * @Version: 1.0
  **/
 @Component
-public class KafkaFrontConsumer implements ApplicationRunner {
+public class KafkaFrontConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaFrontConsumer.class);
-
-    @Resource
-    private PlatformClient platformClient;
-
-    /**
-     *  启动的时候初始化 规则和脚本
-     * @param args
-     * @throws Exception
-     */
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-        ReturnForm<Map<String, Map<String, RuleFormForFront>>> ruleReturnForm = platformClient.findRuleFrontList();
-        Map<String, Map<String, RuleFormForFront>> ruleFrontMap = ruleReturnForm.getMessage();
-        RuleFormMap.init(ruleFrontMap);
-        ReturnForm<List<ProductPropertyParserForm>> parserReturnForm = platformClient.listAll();
-        List<ProductPropertyParserForm> parserForms = parserReturnForm.getMessage();
-        Map<String, String> scriptMap = parserForms.stream().collect(Collectors
-                .toMap(ProductPropertyParserForm::getProductId, ProductPropertyParserForm::getScript));
-        CompiledScriptMap.init(scriptMap);
-    }
 
     @KafkaListener(topics = {Constant.UPDATE_RULE, Constant.UPDATE_SCRIPT})
     public void handle(ConsumerRecord<String, Message> record) throws ScriptException {

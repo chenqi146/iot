@@ -7,7 +7,7 @@ spring:
   cloud:
     consul:
       discovery:
-        instance-id: ${spring.application.name}-${server.port}
+        instance-id: ${spring.application.name}:${server.port}
         health-check-interval: 10s
         tags: dev
         register: false
@@ -70,3 +70,8 @@ mqtt:
 #    root: debug
 server:
   port: 8081
+
+feign:
+  platform:
+    name: iot-platform
+    url: 139.196.101.188:8080

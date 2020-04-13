@@ -8,7 +8,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 /**
  * @program: iot
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Component;
  * @Version: 1.0
  **/
 @Slf4j
-@Component
 public class NettyServer {
 
     private static class SingletonNettyServer {
@@ -61,9 +59,12 @@ public class NettyServer {
             });
         } catch (InterruptedException e) {
             log.error("Netty启动异常", e);
-        } finally {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
         }
+    }
+
+    public void stop() throws InterruptedException {
+        bossGroup.shutdownGracefully().sync();
+        workerGroup.shutdownGracefully().sync();
+        channel.closeFuture().sync();
     }
 }
