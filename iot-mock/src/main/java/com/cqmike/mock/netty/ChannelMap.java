@@ -1,9 +1,10 @@
 package com.cqmike.mock.netty;
 
+import com.cqmike.mock.dto.MockProductDTO;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.netty.channel.Channel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,22 +18,34 @@ import java.util.Map;
  **/
 public class ChannelMap {
 
-    private static Map<String, Channel> channelMap = Maps.newConcurrentMap();
+    private static Map<String, MockChannel> channelMap = Maps.newConcurrentMap();
+
+    private static List<MockProductDTO> propertyFormList = new ArrayList<>();
+
 
     private ChannelMap() {
 
     }
 
-    public static void put(String deviceSn, Channel channel) {
+    public static void put(String deviceSn, MockChannel channel) {
         channelMap.put(deviceSn, channel);
     }
 
-    public static Channel get(String deviceSn) {
+    public static MockChannel get(String deviceSn) {
         return channelMap.get(deviceSn);
     }
 
-    public static List<Channel> values() {
+    public static List<MockChannel> values() {
         return Lists.newArrayList(channelMap.values());
+    }
+
+    public static List<MockProductDTO> getPropertyFormList() {
+        return propertyFormList;
+    }
+
+    public static void initMockList(List<MockProductDTO> list) {
+        propertyFormList.clear();
+        propertyFormList.addAll(list);
     }
 
 }

@@ -69,4 +69,7 @@ public class SpringContextUtil implements ApplicationContextAware {
         }
     }
 
+//    public static String test() {
+//        return "测试测试";
+//    }
 }

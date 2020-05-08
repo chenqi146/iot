@@ -33,4 +33,5 @@ public class Const {
             .valueOf("connection");
 
     public static final int DEVICE_DATA_MIN_LENGTH = 10;
+    public static final int DEVICE_SN_LENGTH = 10;
 }

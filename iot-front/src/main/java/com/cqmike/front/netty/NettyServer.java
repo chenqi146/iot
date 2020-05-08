@@ -7,7 +7,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @program: iot
@@ -17,8 +18,9 @@ import lombok.extern.slf4j.Slf4j;
  * @Date: 2020/3/7 9:42
  * @Version: 1.0
  **/
-@Slf4j
 public class NettyServer {
+
+    private static final Logger log = LoggerFactory.getLogger(NettyServer.class);
 
     private static class SingletonNettyServer {
         static final NettyServer INSTANCE = new NettyServer();

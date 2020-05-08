@@ -16,9 +16,9 @@ public enum AccessTypeEnum implements BaseEnum {
      */
     MQTT("mqtt"),
     /**
-     * kafka
+     * socket
      */
-    KAFKA("kafka");
+    SOCKET("socket");
 
     private final String msg;
 

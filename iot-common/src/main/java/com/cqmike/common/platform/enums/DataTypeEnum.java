@@ -1,7 +1,10 @@
 package com.cqmike.common.platform.enums;
 
+import cn.hutool.core.util.RandomUtil;
 import com.cqmike.common.base.BaseEnum;
 import com.cqmike.common.platform.form.ProductPropertyForm;
+
+import java.util.Random;
 
 /**
  * @program: iot
@@ -22,6 +25,13 @@ public enum DataTypeEnum implements BaseEnum {
             return this.compareBestValue(form.getMax(), form.getMin(), o);
         }
 
+        @Override
+        public Object mock(ProductPropertyForm form) {
+            int min = form.getMin().intValue();
+            int max = form.getMax().intValue();
+            return RandomUtil.randomInt(min, max);
+        }
+
     },
     /**
      * LONG
@@ -30,6 +40,13 @@ public enum DataTypeEnum implements BaseEnum {
         @Override
         public boolean verify(ProductPropertyForm form, Object o) {
             return this.compareBestValue(form.getMax(), form.getMin(), o);
+        }
+
+        @Override
+        public Object mock(ProductPropertyForm form) {
+            long min = form.getMin().longValue();
+            long max = form.getMax().longValue();
+            return RandomUtil.randomLong(min, max);
         }
 
     },
@@ -42,6 +59,10 @@ public enum DataTypeEnum implements BaseEnum {
             return false;
         }
 
+        @Override
+        public Object mock(ProductPropertyForm form) {
+            return RandomUtil.randomString(10);
+        }
     },
     /**
      * DOUBLE
@@ -52,6 +73,10 @@ public enum DataTypeEnum implements BaseEnum {
             return this.compareBestValue(form.getMax(), form.getMin(), o);
         }
 
+        @Override
+        public Object mock(ProductPropertyForm form) {
+            return RandomUtil.randomDouble(form.getMin(), form.getMax());
+        }
     },
     /**
      * FLOAT
@@ -62,6 +87,15 @@ public enum DataTypeEnum implements BaseEnum {
             return this.compareBestValue(form.getMax(), form.getMin(), o);
         }
 
+        @Override
+        public Object mock(ProductPropertyForm form) {
+            int min = form.getMin().intValue();
+            int max = form.getMax().intValue();
+            int i = RandomUtil.randomInt(min, max);
+            Random random = new Random(System.currentTimeMillis());
+            float v = random.nextFloat();
+            return v + i;
+        }
     };
 
     private Class<?> aClass;
@@ -72,22 +106,28 @@ public enum DataTypeEnum implements BaseEnum {
         this.msg = msg;
     }
 
-
-
+    /**
+     * 模拟数据
+     * @param form
+     * @return
+     */
+    public abstract Object mock(ProductPropertyForm form);
     /**
      * 校验
+     *
      * @return
      */
     public abstract boolean verify(ProductPropertyForm form, Object o);
 
     /**
      * 转换并且获取值
+     *
      * @param aClass
      * @param o
      * @param <T>
      * @return
      */
-    public <T> T transformValue(Class<T> aClass, Object o){
+    public <T> T transformValue(Class<T> aClass, Object o) {
         return aClass.cast(o);
     }
 

@@ -2,22 +2,39 @@ mock:
   netty:
     server:
       host: localhost
-      port: 8088
+      port: 8888
       count: 10
 spring:
   cloud:
     consul:
       discovery:
-        instance-id: ${spring.application.name}-${server.port}
+        instance-id: ${spring.application.name}:${server.port}
         health-check-interval: 10s
         tags: dev
-        register: true
+        register: false
         register-health-check: true
         heartbeat:
           enabled: true
       port: 8500
       host: 121.36.54.71
+  redis:
+    host: 121.36.54.71
+    port: 6379
+    database: 0
+    timeout: 0
+    password: root
   application:
     name: iot-mock
 server:
-  port: 8088
+  port: 8083
+mqtt:
+  host: tcp://121.36.54.71:1883
+  client-id: ${spring.application.name}:${server.port}
+  default-sender-topic: mock
+  username: root
+  password: cqmike
+
+feign:
+  platform:
+    name: iot-platform
+    url: 139.196.101.188:8080

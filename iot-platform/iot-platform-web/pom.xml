@@ -11,5 +11,51 @@
 
     <artifactId>iot-platform-web</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.cqmike</groupId>
+            <artifactId>iot-platform-user</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>com.cqmike</groupId>
+            <artifactId>iot-platform-asset</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.cqmike</groupId>
+            <artifactId>iot-platform-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.cqmike.web.WebApplication</mainClass>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>1.4.13</version>
+                <configuration>
+                    <repository>cqmike/${project.artifactId}</repository>
+                    <tag>${project.version}</tag>
+
+                    <buildArgs>
+                        <!-- 指定dockerfile文件使用的jar包 -->
+                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

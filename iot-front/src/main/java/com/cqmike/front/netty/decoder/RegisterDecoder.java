@@ -30,8 +30,8 @@ public class RegisterDecoder extends ByteToMessageDecoder {
 
     private static final Logger log = LoggerFactory.getLogger(RegisterDecoder.class);
 
-    private PlatformClient platformClient = SpringContextUtil.getBean(PlatformClient.class);
-    private KafkaService kafkaService = SpringContextUtil.getBean(KafkaService.class);
+    private final PlatformClient platformClient = SpringContextUtil.getBean(PlatformClient.class);
+    private final KafkaService kafkaService = SpringContextUtil.getBean(KafkaService.class);
     private static final String DEVICE_OFFLINE = "deviceOffline";
     private static final String DEVICE_ONLINE = "deviceOnline";
 
@@ -40,16 +40,14 @@ public class RegisterDecoder extends ByteToMessageDecoder {
 
         byteBuf.retain();
         int readableBytesLength = byteBuf.readableBytes();
-        byte[] s = new byte[readableBytesLength];
-        byteBuf.getBytes(0, s);
+
+        // 处理空包
+        if (readableBytesLength <= 0) {
+            return;
+        }
 
         Connection connection = ctx.channel().attr(Const.CONNECTION).get();
         if (connection == null) {
-
-            // 处理空包
-            if (readableBytesLength <= 0) {
-                return;
-            }
 
             byte[] bytes = new byte[readableBytesLength];
             byteBuf.readBytes(bytes);
@@ -61,18 +59,18 @@ public class RegisterDecoder extends ByteToMessageDecoder {
             ReturnForm<DeviceFormForFront> returnForm = platformClient.findDeviceForFrontBySn(deviceSn);
             DeviceFormForFront deviceForFront = returnForm.getMessage();
             if (deviceForFront == null) {
-                log.error("deviceSn(({}))没有对应的设备信息", deviceSn);
+                log.error("deviceSn({})没有对应的设备信息", deviceSn);
                 return;
             }
             connection = new Connection(ctx.channel(), deviceSn, deviceForFront);
             connection.register(connection);
             log.info("注册成功————ChannelId为({}), deviceSn为({})。", connection.getChannel().id(), deviceSn);
+            kafkaService.asyncSendDataToKafkaTopic(DEVICE_ONLINE, connection.getDeviceSn());
         } else {
             ByteBuf buf = byteBuf.retainedDuplicate();
             in.add(buf);
             byteBuf.skipBytes(readableBytesLength);
         }
-        kafkaService.asyncSendDataToKafkaTopic(DEVICE_ONLINE, connection.getDeviceSn());
     }
 
     @Override

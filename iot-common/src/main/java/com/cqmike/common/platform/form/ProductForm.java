@@ -71,6 +71,8 @@ public class ProductForm extends BaseForm {
     @ApiModelProperty("设备数量")
     private Integer deviceNumber;
 
+    private Integer cycle;
+
     public ProductForm() {
     }
 
@@ -146,5 +148,13 @@ public class ProductForm extends BaseForm {
     public void setAccessType(AccessTypeEnum accessType) {
         this.accessType = accessType;
         this.accessTypeName = accessType.getMsg();
+    }
+
+    public Integer getCycle() {
+        return cycle;
+    }
+
+    public void setCycle(Integer cycle) {
+        this.cycle = cycle;
     }
 }

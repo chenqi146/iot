@@ -1,5 +1,7 @@
 package com.cqmike.common.platform.form.search;
 
+import com.cqmike.core.annotation.Query;
+import com.cqmike.core.annotation.QueryType;
 import com.cqmike.core.form.BaseSearchForm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -21,6 +23,7 @@ public class DeviceRecordSearchForm extends BaseSearchForm {
      * 设备id
      */
     @ApiModelProperty("设备id")
+    @Query(QueryType.eq)
     private String deviceId;
 
     /**
@@ -40,6 +43,20 @@ public class DeviceRecordSearchForm extends BaseSearchForm {
      */
     @ApiModelProperty("数据接收时间")
     private Date receiveTime;
+
+    /**
+     * 开始时间
+     */
+    @ApiModelProperty("开始时间")
+    @Query(QueryType.gt)
+    private String startTime;
+
+    /**
+     * 结束时间
+     */
+    @ApiModelProperty("结束时间")
+    @Query(QueryType.lt)
+    private String endTime;
 
     /**
      * 创建用户
@@ -127,5 +144,21 @@ public class DeviceRecordSearchForm extends BaseSearchForm {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 }

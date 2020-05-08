@@ -1,6 +1,5 @@
 package com.cqmike.common.dto;
 
-import lombok.Data;
 
 /**
  * @program: iot

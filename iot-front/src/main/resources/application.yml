@@ -60,7 +60,7 @@ spring:
 mqtt:
   host: tcp://121.36.54.71:1883
   client-id: testClientId
-  default-receive-topic: testReceiveTopic
+  default-receive-topic: testReceiveTopic/*
   default-sender-topic: testSenderTopic
   completion-timeout: 10000
   username: root
