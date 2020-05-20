@@ -1,6 +1,7 @@
 spring:
   datasource:
-    url: jdbc:mysql://139.196.101.188:3306/iot?characterEncoding=utf-8&useUnicode=true&serverTimezone=Asia/Shanghai
+#    url: jdbc:mysql://139.196.101.188:3306/iot?characterEncoding=utf-8&useUnicode=true&serverTimezone=Asia/Shanghai
+
     username: root
     password: cqmike
     driver-class-name: com.mysql.cj.jdbc.Driver
