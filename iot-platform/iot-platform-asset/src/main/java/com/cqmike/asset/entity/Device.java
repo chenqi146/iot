@@ -69,6 +69,16 @@ public class Device extends BaseEntity {
     @ApiModelProperty("产品id")
     private String productId;
 
+    /**
+     * 产品id
+     */
+    @Column(
+            name = "product_name",
+            columnDefinition = "varchar(32) not null comment '产品名称'"
+    )
+    @ApiModelProperty("产品id")
+    private String productName;
+
 
     /**
      * 设备sn
@@ -156,5 +166,13 @@ public class Device extends BaseEntity {
 
     public void setLastOnlineTime(Date lastOnlineTime) {
         this.lastOnlineTime = lastOnlineTime;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 }

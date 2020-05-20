@@ -1,7 +1,10 @@
 package com.cqmike.asset.service;
+import com.cqmike.common.dto.MockProductDTO;
 import com.cqmike.common.platform.form.ProductForm;
 import com.cqmike.common.platform.form.search.ProductSearchForm;
 import com.cqmike.core.service.CurdService;
+
+import java.util.List;
 
 /**
  * @program: 
@@ -13,4 +16,9 @@ import com.cqmike.core.service.CurdService;
 **/
 public interface ProductService extends CurdService<ProductForm, String, ProductSearchForm> {
 
+    /**
+     *  组装mock数据
+     * @return
+     */
+    List<MockProductDTO> findAllProductMockList();
 }

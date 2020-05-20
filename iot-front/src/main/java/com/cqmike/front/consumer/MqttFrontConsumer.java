@@ -62,6 +62,10 @@ public class MqttFrontConsumer {
     private final static String TOPIC_KEY = "mqttReceivedTopic";
     private final static int TOPIC_DATA_LENGTH = 2;
 
+    /**
+     *  接收的topic为testReceiveTopic/{sn}
+     * @return
+     */
     @Bean
     @ServiceActivator(inputChannel = "mqttInboundChannel")
     public MessageHandler handler() {

@@ -70,7 +70,7 @@ public class UserController extends BaseController {
     }
 
     @ApiOperation("create")
-    @PostMapping("/user")
+    @PostMapping("/user/create")
     public ReturnForm<UserForm> create(UserForm form) {
         UserForm result = service.create(form);
         result.setPassword(null);

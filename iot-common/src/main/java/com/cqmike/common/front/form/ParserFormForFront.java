@@ -50,4 +50,13 @@ public class ParserFormForFront extends BaseForm {
     public void setScriptType(String scriptType) {
         this.scriptType = scriptType;
     }
+
+    @Override
+    public String toString() {
+        return "ParserFormForFront{" +
+                "productId='" + productId + '\'' +
+                ", script='" + script + '\'' +
+                ", scriptType='" + scriptType + '\'' +
+                '}';
+    }
 }

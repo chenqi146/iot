@@ -1,15 +1,20 @@
 package com.cqmike.asset.consumer;
 
+import cn.hutool.core.date.DateTime;
+import com.cqmike.asset.service.DeviceRecordService;
 import com.cqmike.asset.service.DeviceService;
+import com.cqmike.asset.ws.WebSocketServer;
+import com.cqmike.common.dto.AnalyseDataDTO;
 import com.cqmike.common.dto.Message;
 import com.cqmike.common.dto.SocketMessage;
 import com.cqmike.common.platform.enums.DeviceStatusEnum;
 import com.cqmike.common.platform.form.DeviceForm;
+import com.cqmike.common.platform.form.DeviceRecordForm;
+import com.cqmike.core.util.JsonUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -27,6 +32,7 @@ public class KafkaConsumer {
 
     private static final String DEVICE_OFFLINE = "deviceOffline";
     private static final String DEVICE_ONLINE = "deviceOnline";
+    private static final String DEVICE_DATE = "deviceRecordData";
 
     private static final Logger log = LoggerFactory.getLogger(KafkaConsumer.class);
 
@@ -34,33 +40,67 @@ public class KafkaConsumer {
     private DeviceService deviceService;
 
     @Resource
-    private SimpMessagingTemplate simpMessagingTemplate;
+    private DeviceRecordService deviceRecordService;
 
     /**
      *  设备离线 上线 处理
      * @param record
      */
     @KafkaListener(topics = {DEVICE_OFFLINE, DEVICE_ONLINE})
-    public void handleDevice(ConsumerRecord<String, Message> record) {
+    public void handleDevice(ConsumerRecord<String, String> record) {
         log.info("methodName: handleDevice ----- params: record = [{}]", record);
 
-        String topic = record.topic();
-        Message value = record.value();
+        if (record == null) {
+            return;
+        }
 
-        DeviceForm deviceForm = deviceService.findOneBySn(value.getMsg());
+        String topic = record.topic();
+        String valueStr = record.value();
+        Message value = JsonUtils.parse(valueStr, Message.class);
+        String msg = value.getMsg();
+
+        String deviceSn = value.getMsg();
+        DeviceForm deviceForm = deviceService.findOneBySn(deviceSn);
         if (topic.equals(DEVICE_OFFLINE)) {
             deviceForm.setStatus(DeviceStatusEnum.OFFLINE);
+            SocketMessage socketMessage = new SocketMessage(0, deviceSn);
+            WebSocketServer.sendMessage(deviceSn, socketMessage);
         } else if (topic.equals(DEVICE_ONLINE)) {
             deviceForm.setStatus(DeviceStatusEnum.ONLINE);
             deviceForm.setLastOnlineTime(value.getDate());
+            SocketMessage socketMessage = new SocketMessage(1, deviceSn);
+            WebSocketServer.sendMessage(deviceSn, socketMessage);
         } else {
             return;
         }
 
         deviceService.update(deviceForm);
-        SocketMessage socketMessage = new SocketMessage();
-        Message message = new Message(socketMessage);
-        simpMessagingTemplate.convertAndSend("/", message);
+    }
 
+    /**
+     *  设备数据接收 推送给前端
+     * @param record
+     */
+    @KafkaListener(topics = {DEVICE_DATE})
+    public void handleDeviceData(ConsumerRecord<String, String> record) {
+        log.info("methodName: handleDeviceData ----- params: record = [{}]", record);
+
+        if (record == null) {
+            return;
+        }
+
+        String valueStr = record.value();
+        Message value = JsonUtils.parse(valueStr, Message.class);
+
+        AnalyseDataDTO dto = JsonUtils.parse(value.getMsg(), AnalyseDataDTO.class);
+        SocketMessage socketMessage = new SocketMessage(2, dto.getData());
+        WebSocketServer.sendMessage(dto.getDeviceSn(), socketMessage);
+
+        DeviceRecordForm recordForm = new DeviceRecordForm();
+        recordForm.setReceiveTime(DateTime.now());
+        recordForm.setProductId(dto.getProductId());
+        recordForm.setDeviceSn(dto.getProductId());
+        recordForm.setData(JsonUtils.toJson(dto.getData()));
+        deviceRecordService.create(recordForm);
     }
 }

@@ -1,7 +1,7 @@
 package com.cqmike.mock.client;
 
 import com.cqmike.core.result.ReturnForm;
-import com.cqmike.mock.dto.MockProductDTO;
+import com.cqmike.common.dto.MockProductDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -19,7 +19,7 @@ import java.util.List;
 public interface PlatformClient {
 
     /**
-     * 从平台获取mock端用于模拟的数据对象  todo 平台端还未实现
+     * 从平台获取mock端用于模拟的数据对象  todo 平台端实现了  待测试
      * @return
      */
     @GetMapping("/feign/mock/findAllProductMockList")

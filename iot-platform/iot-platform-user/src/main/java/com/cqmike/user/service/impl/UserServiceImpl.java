@@ -1,16 +1,15 @@
 package com.cqmike.user.service.impl;
 
-import cn.hutool.core.codec.Base32;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.cqmike.common.platform.form.UserForm;
+import com.cqmike.common.platform.form.search.UserSearchForm;
 import com.cqmike.core.exception.BusinessException;
 import com.cqmike.core.service.AbstractCurdService;
 import com.cqmike.user.convert.UserConvert;
 import com.cqmike.user.entity.User;
-import com.cqmike.common.platform.form.UserForm;
-import com.cqmike.common.platform.form.search.UserSearchForm;
 import com.cqmike.user.interceptor.Auth;
 import com.cqmike.user.repository.UserRepository;
 import com.cqmike.user.service.UserService;
@@ -72,17 +71,14 @@ public class UserServiceImpl extends AbstractCurdService<User, String, UserSearc
             throw new BusinessException("用户或密码不正确");
         }
 
-        String pwdStr = Base32.decodeStr(password);
-        pwdStr = SecureUtil.md5(pwdStr);
+        String pwdStr = SecureUtil.md5(password);
         boolean equals = pwdStr.equals(userForm.getPassword());
         if (!equals) {
             throw new BusinessException("用户或密码不正确");
         }
-
         String token = JWT.create()
                 .withClaim("loginName", loginName)
-                .sign(Algorithm.HMAC256(password));
-
+                .sign(Algorithm.HMAC256(pwdStr));
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
         ops.set(loginName, token, 2, TimeUnit.HOURS);
         return token;
@@ -99,10 +95,10 @@ public class UserServiceImpl extends AbstractCurdService<User, String, UserSearc
     public UserForm create(@NonNull UserForm form) {
 
         String password = form.getPassword();
-        password = Base32.decodeStr(password);
         password = SecureUtil.md5(password);
         form.setPassword(password);
 
-        return super.create(form);
+        UserForm userForm = super.create(form);
+        return userForm;
     }
 }

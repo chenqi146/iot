@@ -1,6 +1,6 @@
 package com.cqmike.mock.netty;
 
-import com.cqmike.mock.dto.MockProductDTO;
+import com.cqmike.common.dto.MockProductDTO;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 

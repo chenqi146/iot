@@ -1,5 +1,6 @@
 package com.cqmike.front.util;
 
+import io.netty.buffer.ByteBuf;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -69,7 +70,19 @@ public class SpringContextUtil implements ApplicationContextAware {
         }
     }
 
-//    public static String test() {
-//        return "测试测试";
-//    }
+    public static String test() {
+        return "测试测试";
+    }
+
+    /**
+     *  读取字符串
+     * @param buf
+     * @param length
+     * @return
+     */
+    public static String readString(ByteBuf buf, int length) {
+        byte[] bytes = new byte[length];
+        buf.getBytes(0, bytes);
+        return new String(bytes);
+    }
 }

@@ -28,12 +28,12 @@ public class DeviceRecord extends BaseEntity {
     /**
      * 设备id
      */
-    @ApiModelProperty(value = "设备id")
+    @ApiModelProperty(value = "设备sn")
     @Column(
-            name = "device_id",
-            columnDefinition = "varchar(32) NOT NULL COMMENT '设备id'"
+            name = "device_Sn",
+            columnDefinition = "varchar(32) NOT NULL COMMENT '设备sn'"
     )
-    private String deviceId;
+    private String deviceSn;
 
     /**
      * 产品id
@@ -65,12 +65,12 @@ public class DeviceRecord extends BaseEntity {
     )
     private Date receiveTime;
 
-    public String getDeviceId() {
-        return deviceId;
+    public String getDeviceSn() {
+        return deviceSn;
     }
 
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
+    public void setDeviceSn(String deviceId) {
+        this.deviceSn = deviceId;
     }
 
     public String getProductId() {

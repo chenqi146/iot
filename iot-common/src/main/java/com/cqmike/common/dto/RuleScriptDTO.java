@@ -3,6 +3,7 @@ package com.cqmike.common.dto;
 import com.cqmike.common.front.enums.OperateTypeEnum;
 import com.cqmike.common.front.form.ParserFormForFront;
 import com.cqmike.common.front.form.RuleFormForFront;
+import com.cqmike.common.platform.form.ProductPropertyForm;
 
 /**
  * @program: iot
@@ -17,6 +18,7 @@ public class RuleScriptDTO {
     private OperateTypeEnum operateType;
     private RuleFormForFront ruleForm;
     private ParserFormForFront parserForm;
+    private ProductPropertyForm propForm;
     private String productId;
 
     public RuleScriptDTO() {
@@ -35,6 +37,14 @@ public class RuleScriptDTO {
 
     public void setOperateType(OperateTypeEnum operateType) {
         this.operateType = operateType;
+    }
+
+    public ProductPropertyForm getPropForm() {
+        return propForm;
+    }
+
+    public void setPropForm(ProductPropertyForm propForm) {
+        this.propForm = propForm;
     }
 
     public RuleFormForFront getRuleForm() {
@@ -59,5 +69,16 @@ public class RuleScriptDTO {
 
     public void setProductId(String productId) {
         this.productId = productId;
+    }
+
+    @Override
+    public String toString() {
+        return "RuleScriptDTO{" +
+                "operateType=" + operateType +
+                ", ruleForm=" + ruleForm +
+                ", parserForm=" + parserForm +
+                ", propForm=" + propForm +
+                ", productId='" + productId + '\'' +
+                '}';
     }
 }

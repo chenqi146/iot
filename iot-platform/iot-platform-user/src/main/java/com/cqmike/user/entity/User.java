@@ -1,13 +1,15 @@
 package com.cqmike.user.entity;
 
+import cn.hutool.core.date.DateTime;
+import com.cqmike.common.platform.form.UserForm;
 import com.cqmike.core.entity.BaseEntity;
-import com.cqmike.user.interceptor.CustomerListener;
+import com.cqmike.user.interceptor.Auth;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 /**
@@ -21,7 +23,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "user")
 @ApiModel(value = "用户实体")
-@EntityListeners(value = {CustomerListener.class})
 public class User extends BaseEntity {
 
 
@@ -67,6 +68,13 @@ public class User extends BaseEntity {
     )
     @ApiModelProperty("邮箱")
     private String email;
+
+    @PreUpdate
+    public void preUpdate() {
+        UserForm user = Auth.getInstance().getUser();
+        this.setUpdateUserName(user.getUserName());
+        this.setUpdateTime(DateTime.now());
+    }
 
     public String getUserName() {
         return userName;

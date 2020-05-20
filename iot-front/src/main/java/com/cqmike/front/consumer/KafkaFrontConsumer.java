@@ -7,6 +7,7 @@ import com.cqmike.common.dto.RuleScriptDTO;
 import com.cqmike.common.front.enums.OperateTypeEnum;
 import com.cqmike.core.util.JsonUtils;
 import com.cqmike.front.map.CompiledScriptMap;
+import com.cqmike.front.map.PropertyFormMap;
 import com.cqmike.front.map.RuleFormMap;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -30,13 +31,14 @@ public class KafkaFrontConsumer {
     private static final Logger log = LoggerFactory.getLogger(KafkaFrontConsumer.class);
 
     @KafkaListener(topics = {Constant.UPDATE_RULE, Constant.UPDATE_SCRIPT})
-    public void handle(ConsumerRecord<String, Message> record) throws ScriptException {
+    public void handle(ConsumerRecord<String, String> record) throws ScriptException {
         log.info("methodName: handle ----- params: record = [{}]", record);
         if (record == null) {
             return;
         }
         String topic = record.topic();
-        Message value = record.value();
+        String valueStr = record.value();
+        Message value = JsonUtils.parse(valueStr, Message.class);
         String msg = value.getMsg();
         if (StrUtil.isEmpty(msg)) {
             return;
@@ -49,6 +51,8 @@ public class KafkaFrontConsumer {
             RuleFormMap.update(dto.getRuleForm(), operateType);
         } else if (Constant.UPDATE_SCRIPT.equals(topic)) {
             CompiledScriptMap.update(dto.getParserForm(), operateType);
+        } else if (Constant.UPDATE_PROP.equals(topic)) {
+            PropertyFormMap.update(dto.getPropForm(), operateType);
         }
 
     }

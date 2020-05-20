@@ -36,6 +36,12 @@ public class RuleForm extends BaseForm {
     private MiddleTypeEnum middlewareType;
 
     /**
+     * 中间件id
+     */
+    @ApiModelProperty("中间件类型名称")
+    private String middlewareTypeName;
+
+    /**
      * 规则名称
      */
     @ApiModelProperty("规则名称")
@@ -101,6 +107,7 @@ public class RuleForm extends BaseForm {
     }
 
     public void setMiddlewareType(MiddleTypeEnum middlewareType) {
+        this.middlewareTypeName = middlewareType.getMsg();
         this.middlewareType = middlewareType;
     }
 
@@ -160,5 +167,13 @@ public class RuleForm extends BaseForm {
     public void setStatus(RuleStatusEnum status) {
         this.status = status;
         this.statusName = status.getMsg();
+    }
+
+    public String getMiddlewareTypeName() {
+        return middlewareTypeName;
+    }
+
+    public void setMiddlewareTypeName(String middlewareTypeName) {
+        this.middlewareTypeName = middlewareTypeName;
     }
 }

@@ -14,7 +14,7 @@ public enum RuleTypeEnum implements BaseEnum {
     /**
      * 流转
      */
-    CIRCULATION("circulation");
+    CIRCULATION("流转");
 
     private final String msg;
 

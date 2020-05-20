@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://139.196.101.188:3306/iot?characterEncoding=utf-8&useUnicode=true&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/iot?characterEncoding=utf-8&useUnicode=true&serverTimezone=Asia/Shanghai
     username: root
-    password: cqmike
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
   cloud:
     consul:
@@ -55,14 +55,15 @@ spring:
     serialization:
       indent-output: true
   redis:
-    host: 121.36.54.71
+#    host: 121.36.54.71
+    host: localhost
     port: 6379
     database: 0
     timeout: 0
-    password: root
+#    password: cqmike
     feign-token: 072C08C21F8E8B0AD2CB83FDF9EADBE0
 server:
-  port: 8080
+  port: 8088
 swagger:
   markdowns: classpath:markdown/*
   basic:

@@ -86,7 +86,17 @@ public class DeviceForm extends BaseForm {
     @ApiModelProperty("设备最后上线时间")
     private Date lastOnlineTime;
 
+    private String parentDeviceId;
+
     public DeviceForm() {
+    }
+
+    public String getParentDeviceId() {
+        return parentDeviceId;
+    }
+
+    public void setParentDeviceId(String parentDeviceId) {
+        this.parentDeviceId = parentDeviceId;
     }
 
     public Date getInstallationDate() {

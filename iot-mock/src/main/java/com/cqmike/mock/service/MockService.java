@@ -10,8 +10,8 @@ import com.cqmike.common.platform.form.ProductPropertyForm;
 import com.cqmike.core.result.ReturnForm;
 import com.cqmike.core.util.JsonUtils;
 import com.cqmike.mock.client.PlatformClient;
-import com.cqmike.mock.dto.Mock;
-import com.cqmike.mock.dto.MockProductDTO;
+import com.cqmike.common.dto.Mock;
+import com.cqmike.common.dto.MockProductDTO;
 import com.cqmike.mock.netty.ChannelMap;
 import com.cqmike.mock.netty.MockChannel;
 import io.netty.buffer.ByteBuf;
@@ -103,7 +103,7 @@ public class MockService {
                     mqttSender.sendData("/mock/" + sn, mock);
                     log.info("mock-mqtt数据发送({})", JsonUtils.toJson(mock));
 
-                    // socket接入 todo 需要封装一个操控ByteBuf类的工具类给js使用
+                    // socket接入
                 } else if (accessType == AccessTypeEnum.SOCKET){
 
                     ByteBuf buf = Unpooled.buffer();

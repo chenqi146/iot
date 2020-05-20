@@ -1,5 +1,6 @@
 package com.cqmike.asset.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.cqmike.asset.convert.DeviceConvert;
 import com.cqmike.asset.entity.Device;
 import com.cqmike.asset.repository.DeviceRepository;
@@ -20,6 +21,7 @@ import com.cqmike.core.exception.BusinessException;
 import com.cqmike.core.service.AbstractCurdService;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
@@ -150,5 +152,28 @@ public class DeviceServiceImpl extends AbstractCurdService<Device, String, Devic
         });
 
         return deviceForms;
+    }
+
+    @NonNull
+    @Override
+    public DeviceForm create(@NonNull DeviceForm form) {
+
+        String parentDeviceId = form.getParentDeviceId();
+        DeviceForm deviceForm = super.create(form);
+        if (StrUtil.isEmpty(parentDeviceId)) {
+            return deviceForm;
+        }
+
+        // 网关子设备 携带 parentDeviceId  网关表添加
+        DeviceForm parent = this.findById(parentDeviceId);
+
+        GatewayForm gatewayForm = new GatewayForm();
+        gatewayForm.setDeviceId(parent.getId());
+        gatewayForm.setDeviceSn(parent.getSn());
+        gatewayForm.setChildDeviceId(deviceForm.getSn());
+        gatewayForm.setChildDeviceSn(deviceForm.getSn());
+        gatewayService.create(gatewayForm);
+
+        return deviceForm;
     }
 }

@@ -1,4 +1,4 @@
-package com.cqmike.mock.dto;
+package com.cqmike.common.dto;
 
 import com.cqmike.common.platform.form.DeviceForm;
 import com.cqmike.common.platform.form.ProductForm;

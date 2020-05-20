@@ -1,5 +1,7 @@
 package com.cqmike.user.interceptor;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.TimeInterval;
 import cn.hutool.core.util.StrUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -36,6 +38,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        TimeInterval timer = DateUtil.timer();
         String token = request.getHeader("token");
         if (StrUtil.isEmpty(token)) {
             throw new ApiAuthorityException("接口没有携带token");
@@ -80,7 +83,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         ops.set(loginName, token, 2, TimeUnit.HOURS);
         user.setPassword(null);
         Auth.getInstance().setUser(user);
-
+        long interval = timer.interval();
+        System.out.println(interval);
         return true;
     }
 

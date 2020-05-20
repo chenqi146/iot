@@ -10,7 +10,7 @@
 
     <modules>
         <!--        公共模块-->
-        <module>iot-platform-common</module>
+<!--        <module>iot-platform-common</module>-->
         <!--        用户-->
         <module>iot-platform-user</module>
         <!--        资产-->

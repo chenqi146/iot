@@ -1,4 +1,4 @@
-package com.cqmike.mock.dto;
+package com.cqmike.common.dto;
 
 import java.util.HashMap;
 

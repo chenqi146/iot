@@ -24,7 +24,33 @@ public class GatewayForm extends BaseForm {
      */
     @ApiModelProperty("网关子设备id")
     private String childDeviceId;
+    /**
+     * 网关设备sn
+     */
+    @ApiModelProperty("网关设备sn")
+    private String deviceSn;
 
+    /**
+     * 网关子设备sn
+     */
+    @ApiModelProperty("网关子设备sn")
+    private String childDeviceSn;
+
+    public String getDeviceSn() {
+        return deviceSn;
+    }
+
+    public void setDeviceSn(String deviceSn) {
+        this.deviceSn = deviceSn;
+    }
+
+    public String getChildDeviceSn() {
+        return childDeviceSn;
+    }
+
+    public void setChildDeviceSn(String childDeviceSn) {
+        this.childDeviceSn = childDeviceSn;
+    }
 
     public GatewayForm() {
     }

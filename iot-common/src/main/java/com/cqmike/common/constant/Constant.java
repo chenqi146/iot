@@ -12,4 +12,5 @@ public class Constant {
 
     public final static String UPDATE_RULE = "frontUpdateRule";
     public final static String UPDATE_SCRIPT = "frontUpdateScript";
+    public final static String UPDATE_PROP = "frontUpdateProp";
 }

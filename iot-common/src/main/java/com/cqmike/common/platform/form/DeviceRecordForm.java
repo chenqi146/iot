@@ -26,10 +26,10 @@ public class DeviceRecordForm extends BaseForm {
     private static final Logger log = LoggerFactory.getLogger(DeviceRecordForm.class);
 
     /**
-     * 设备id
+     * 设备sn
      */
-    @ApiModelProperty("设备id")
-    private String deviceId;
+    @ApiModelProperty("设备sn")
+    private String deviceSn;
 
     /**
      * 产品id
@@ -69,12 +69,12 @@ public class DeviceRecordForm extends BaseForm {
         }
     }
 
-    public String getDeviceId() {
-        return deviceId;
+    public String getDeviceSn() {
+        return deviceSn;
     }
 
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
+    public void setDeviceSn(String deviceSn) {
+        this.deviceSn = deviceSn;
     }
 
     public String getProductId() {

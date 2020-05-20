@@ -24,9 +24,9 @@ public class ProductForm extends BaseForm {
     private String name;
 
     /**
-     * 产品类型 GATAWAY-网关，DEVICE-设备 CHILD_DEVICE-子设备
+     * 产品类型 GATEWAY-网关，DEVICE-设备 CHILD_DEVICE-子设备
      */
-    @ApiModelProperty("产品类型 GATAWAY-网关，DEVICE-设备 CHILD_DEVICE-子设备")
+    @ApiModelProperty("产品类型 GATEWAY-网关，DEVICE-设备 CHILD_DEVICE-子设备")
     private ProductTypeEnum type;
 
     /**
@@ -71,6 +71,10 @@ public class ProductForm extends BaseForm {
     @ApiModelProperty("设备数量")
     private Integer deviceNumber;
 
+    /**
+     * 产品周期
+     */
+    @ApiModelProperty("产品周期")
     private Integer cycle;
 
     public ProductForm() {

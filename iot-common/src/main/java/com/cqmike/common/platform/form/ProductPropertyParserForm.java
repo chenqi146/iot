@@ -1,4 +1,6 @@
 package com.cqmike.common.platform.form;
+
+import com.cqmike.common.platform.enums.ScriptTypeEnum;
 import com.cqmike.core.form.BaseForm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -29,7 +31,7 @@ public class ProductPropertyParserForm extends BaseForm {
      * 脚本类型  javascript
      */
     @ApiModelProperty("脚本类型  javascript")
-    private String scriptType;
+    private ScriptTypeEnum scriptType;
 
     public ProductPropertyParserForm() {
     }
@@ -50,11 +52,11 @@ public class ProductPropertyParserForm extends BaseForm {
         this.script = script;
     }
 
-    public String getScriptType() {
+    public ScriptTypeEnum getScriptType() {
         return scriptType;
     }
 
-    public void setScriptType(String scriptType) {
+    public void setScriptType(ScriptTypeEnum scriptType) {
         this.scriptType = scriptType;
     }
 }

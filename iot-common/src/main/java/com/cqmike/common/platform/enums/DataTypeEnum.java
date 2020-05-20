@@ -56,7 +56,7 @@ public enum DataTypeEnum implements BaseEnum {
     STRING(String.class, "String(字符串型)") {
         @Override
         public boolean verify(ProductPropertyForm form, Object o) {
-            return false;
+            return true;
         }
 
         @Override

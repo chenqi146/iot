@@ -17,6 +17,7 @@ import com.cqmike.front.netty.Const;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
@@ -141,7 +142,7 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
 
     private String scriptExecute(ByteBuf buf, String productId) throws ScriptException {
 
-        // todo 封装一个静态方法类提供给js调用
+        // 封装一个静态方法类提供给js调用
         // 获取已编译的js
         CompiledScript script = CompiledScriptMap.get(productId);
         Bindings bindings = CompiledScriptMap.getBindings();
@@ -158,33 +159,37 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
 
     public static void main(String[] args) throws ScriptException, NoSuchMethodException {
         String scriptStr = "var ass = function(v) {\n" +
-                " var MyClass = Java.type('com.cqmike.front.util.SpringContextUtil');" +
-                "var result = MyClass.test();  " +
-                "return v + '啦啦啦我' + result + '是卖报的小当家';\n" +
+                " var MyClass = Java.type('com.cqmike.front.util.ByteBufUtil');" +
+                "var result = MyClass.readInteger(v);  " +
+                "var result1 = MyClass.readDouble(v);  " +
+                "return result + '-' + result1;\n" +
                 "};";
 //        scriptEngine.eval(scriptStr);
+        ByteBuf buf = Unpooled.buffer();
+        buf.writeInt(3);
+        buf.writeDouble(3.14);
         ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
         ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("js");
         CompiledScript compiledScript = ((Compilable) scriptEngine).compile(scriptStr);
         CompiledScript script = ((Compilable) scriptEngine).compile("ass(v)");
         ScriptContext context = new SimpleScriptContext();
         compiledScript.eval(context);
-        TimeInterval timer = DateUtil.timer();
+        Bindings bindings = context.getBindings(ScriptContext.ENGINE_SCOPE);
+        bindings.put("v", buf);
 
-//        for (int i = 0; i < 5000000; i++) {
+        TimeInterval timer = DateUtil.timer();
+//        for (int i = 0; i < 1000000; i++) {
 
 //            Invocable invocable = (Invocable) scriptEngine;
 //            String analyse = (String) invocable.invokeFunction("analyse", "as");
 
-            Bindings bindings = context.getBindings(ScriptContext.ENGINE_SCOPE);
-            bindings.put("v", "sadsada");
-            String result;
-            result = ((String) script.eval(context));
+            Object result;
+            result = script.eval(context);
+//            Map<String, Object> map = JsonUtils.parse(result, new TypeReference<Map<String, Object>>(){});
             System.out.println(result);
 //        }
 
         System.out.println(timer.interval());
-        System.out.println(timer.intervalSecond());
 
 
     }

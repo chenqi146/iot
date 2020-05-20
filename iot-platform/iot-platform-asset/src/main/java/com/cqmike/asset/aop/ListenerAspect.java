@@ -3,15 +3,16 @@ package com.cqmike.asset.aop;
 import cn.hutool.core.bean.BeanUtil;
 import com.cqmike.asset.producer.KafkaService;
 import com.cqmike.asset.service.impl.ProductPropertyParserServiceImpl;
+import com.cqmike.asset.service.impl.ProductPropertyServiceImpl;
 import com.cqmike.asset.service.impl.RuleServiceImpl;
 import com.cqmike.common.constant.Constant;
 import com.cqmike.common.dto.RuleScriptDTO;
 import com.cqmike.common.front.enums.OperateTypeEnum;
 import com.cqmike.common.front.form.ParserFormForFront;
 import com.cqmike.common.front.form.RuleFormForFront;
+import com.cqmike.common.platform.form.ProductPropertyForm;
 import com.cqmike.common.platform.form.ProductPropertyParserForm;
 import com.cqmike.common.platform.form.RuleForm;
-import com.cqmike.core.util.JsonUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.After;
@@ -44,9 +45,10 @@ public class ListenerAspect {
     private KafkaService kafkaService;
 
     @Pointcut(
-            "execution(* com.cqmike.core.service.AbstractCurdService.update(..)) && " +
-                    "execution(* com.cqmike.core.service.AbstractCurdService.create(..)) &&" +
-                    "target(com.cqmike.asset.service.impl.RuleServiceImpl) &&" +
+            "execution(* com.cqmike.core.service.AbstractCurdService.update(..)) || " +
+                    "execution(* com.cqmike.core.service.AbstractCurdService.create(..)) || " +
+                    "target(com.cqmike.asset.service.impl.RuleServiceImpl) ||" +
+                    "target(com.cqmike.asset.service.impl.ProductPropertyServiceImpl) ||" +
                     " target(com.cqmike.asset.service.impl.ProductPropertyParserServiceImpl)"
     )
     public void listenerSingle() {
@@ -58,15 +60,16 @@ public class ListenerAspect {
         String className = joinPoint.getTarget().getClass().getName();
         String methodName = signature.getName();
 
-        RuleScriptDTO build = getRuleScriptDTO(result);
+        RuleScriptDTO build = getRuleScriptDTO(result, OperateTypeEnum.UPDATE);
 
-        log.info("({})中的({})方法触发, 发送的消息为({})", className, methodName, build);
+//        log.info("({})中的({})方法触发, 发送的消息为({})", className, methodName, build);
     }
 
     @Pointcut(
-            "execution(* com.cqmike.core.service.AbstractCurdService.updateInBatch(..)) && " +
-                    "execution(* com.cqmike.core.service.AbstractCurdService.createInBatch(..)) &&" +
-                    "target(com.cqmike.asset.service.impl.RuleServiceImpl) &&" +
+            "execution(* com.cqmike.core.service.AbstractCurdService.updateInBatch(..)) || " +
+                    "execution(* com.cqmike.core.service.AbstractCurdService.createInBatch(..)) ||" +
+                    "target(com.cqmike.asset.service.impl.RuleServiceImpl) ||" +
+                    "target(com.cqmike.asset.service.impl.ProductPropertyServiceImpl) ||" +
                     " target(com.cqmike.asset.service.impl.ProductPropertyParserServiceImpl)"
     )
     public void listenerBatch() {
@@ -86,10 +89,10 @@ public class ListenerAspect {
 
         List<RuleScriptDTO> dtoList = new ArrayList<>();
         for (Object o : list) {
-            RuleScriptDTO dto = getRuleScriptDTO(o);
+            RuleScriptDTO dto = getRuleScriptDTO(o, OperateTypeEnum.UPDATE);
             dtoList.add(dto);
         }
-        log.info("({})中的({})方法触发, 发送的消息为({})", className, methodName, JsonUtils.toJson(dtoList));
+//        log.info("({})中的({})方法触发, 发送的消息为({})", className, methodName, JsonUtils.toJson(dtoList));
     }
 
     /**
@@ -98,9 +101,9 @@ public class ListenerAspect {
      * @param result 方法返回值
      * @return
      */
-    private RuleScriptDTO getRuleScriptDTO(Object result) {
+    private RuleScriptDTO getRuleScriptDTO(Object result, OperateTypeEnum typeEnum) {
         RuleScriptDTO build = new RuleScriptDTO();
-        build.setOperateType(OperateTypeEnum.UPDATE);
+        build.setOperateType(typeEnum);
 
         if (result instanceof RuleForm) {
             RuleForm ruleForm = (RuleForm) result;
@@ -117,13 +120,19 @@ public class ListenerAspect {
             build.setParserForm(front);
             build.setProductId(front.getProductId());
             kafkaService.asyncSendDataToKafkaTopic(Constant.UPDATE_SCRIPT, build);
+        } else if (result instanceof ProductPropertyForm) {
+            ProductPropertyForm propForm = (ProductPropertyForm) result;
+            build.setPropForm(propForm);
+            build.setProductId(propForm.getProductId());
+            kafkaService.asyncSendDataToKafkaTopic(Constant.UPDATE_PROP, build);
         }
         return build;
     }
 
     @Pointcut(
-            "execution(* com.cqmike.core.service.AbstractCurdService.remove(..)) && " +
-                    "target(com.cqmike.asset.service.impl.RuleServiceImpl) &&" +
+            "execution(* com.cqmike.core.service.AbstractCurdService.remove(..)) || " +
+                    "target(com.cqmike.asset.service.impl.RuleServiceImpl) ||" +
+                    "target(com.cqmike.asset.service.impl.ProductPropertyServiceImpl) ||" +
                     " target(com.cqmike.asset.service.impl.ProductPropertyParserServiceImpl)"
     )
     public void listenerRemove() {
@@ -136,35 +145,21 @@ public class ListenerAspect {
         String methodName = signature.getName();
         Object result = joinPoint.getArgs()[0];
 
-        RuleScriptDTO build = new RuleScriptDTO();
-        build.setOperateType(OperateTypeEnum.DELETE);
+        RuleScriptDTO build = getRuleScriptDTO(result, OperateTypeEnum.DELETE);
 
-        if (result instanceof RuleForm) {
-            RuleForm form = (RuleForm) result;
-            RuleFormForFront front = new RuleFormForFront();
-            BeanUtil.copyProperties(form, front);
-
-            build.setProductId(front.getProductId());
-            build.setRuleForm(front);
-            kafkaService.asyncSendDataToKafkaTopic(Constant.UPDATE_RULE, build);
-        } else if (result instanceof ProductPropertyParserForm) {
-            ProductPropertyParserForm form = (ProductPropertyParserForm) result;
-            build.setProductId(form.getProductId());
-            kafkaService.asyncSendDataToKafkaTopic(Constant.UPDATE_SCRIPT, build);
-        }
-
-        log.info("({})中的({})方法触发, 发送的消息为({})", className, methodName, build);
+//        log.info("({})中的({})方法触发, 发送的消息为({})", className, methodName, build);
     }
 
     @Pointcut(
-            "execution(* com.cqmike.core.service.AbstractCurdService.removeAll(..)) && " +
-                    "target(com.cqmike.asset.service.impl.RuleServiceImpl) &&" +
+            "execution(* com.cqmike.core.service.AbstractCurdService.removeAll(..)) || " +
+                    "target(com.cqmike.asset.service.impl.RuleServiceImpl) ||" +
+                    "target(com.cqmike.asset.service.impl.ProductPropertyServiceImpl) ||" +
                     " target(com.cqmike.asset.service.impl.ProductPropertyParserServiceImpl)"
     )
     public void listenerRemoveAll() {
     }
 
-    @After(value = "listenerRemoveAll()")
+//    @After(value = "listenerRemoveAll()")
     public void afterRemoveAll(JoinPoint joinPoint) {
         Signature signature = joinPoint.getSignature();
         Object target = joinPoint.getTarget();
@@ -178,8 +173,10 @@ public class ListenerAspect {
             kafkaService.asyncSendDataToKafkaTopic(Constant.UPDATE_RULE, build);
         } else if (target instanceof ProductPropertyParserServiceImpl) {
             kafkaService.asyncSendDataToKafkaTopic(Constant.UPDATE_SCRIPT, build);
+        } else if (target instanceof ProductPropertyServiceImpl) {
+            kafkaService.asyncSendDataToKafkaTopic(Constant.UPDATE_SCRIPT, build);
         }
 
-        log.info("({})中的({})方法触发, 发送的消息为({})", className, methodName, build);
+//        log.info("({})中的({})方法触发, 发送的消息为({})", className, methodName, build);
     }
 }

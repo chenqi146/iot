@@ -1,6 +1,7 @@
 package com.cqmike.asset.controller;
 
 import com.cqmike.asset.service.ProductService;
+import com.cqmike.common.dto.MockProductDTO;
 import com.cqmike.common.platform.form.ProductForm;
 import com.cqmike.common.platform.form.search.ProductSearchForm;
 import com.cqmike.core.controller.BaseController;
@@ -9,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -77,6 +79,17 @@ public class ProductController extends BaseController {
     public ReturnForm<ProductForm> remove(ProductForm form) {
         service.remove(form);
         return ReturnForm.success();
+    }
+
+    /**
+     *  组装所有的mock数据dto
+     * @return
+     */
+    @ApiIgnore
+    @GetMapping("/feign/mock/findAllProductMockList")
+    public ReturnForm<List<MockProductDTO>> findAllProductMockList(){
+        List<MockProductDTO> front = this.service.findAllProductMockList();
+        return ReturnForm.success(front);
     }
 
 }

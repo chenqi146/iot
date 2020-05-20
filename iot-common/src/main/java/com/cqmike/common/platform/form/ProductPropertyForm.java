@@ -158,4 +158,20 @@ public class ProductPropertyForm extends BaseForm {
         this.type = type;
         this.typeName = type.getMsg();
     }
+
+    @Override
+    public String toString() {
+        return "ProductPropertyForm{" +
+                "description='" + description + '\'' +
+                ", identifier='" + identifier + '\'' +
+                ", max=" + max +
+                ", min=" + min +
+                ", name='" + name + '\'' +
+                ", productId='" + productId + '\'' +
+                ", type=" + type +
+                ", typeName='" + typeName + '\'' +
+                ", value='" + value + '\'' +
+                ", unit='" + unit + '\'' +
+                '}';
+    }
 }

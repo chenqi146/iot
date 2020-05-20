@@ -10,7 +10,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 公共模块
@@ -30,7 +29,7 @@ public class WebApplication {
     @PostConstruct
     public void init() {
         ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
-        ops.set("feignToken", token, 2, TimeUnit.HOURS);
+        ops.set("feignToken", token);
     }
 
     public static void main(String[] args) {

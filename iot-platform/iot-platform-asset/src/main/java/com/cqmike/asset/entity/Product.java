@@ -85,6 +85,24 @@ public class Product extends BaseEntity {
     )
     private String description;
 
+    /**
+     * 产品描述
+     */
+    @ApiModelProperty(value = "产品周期")
+    @Column(
+            name = "cycle",
+            columnDefinition = "int(10) DEFAULT 0 COMMENT '产品周期'"
+    )
+    private Integer cycle;
+
+    public Integer getCycle() {
+        return cycle;
+    }
+
+    public void setCycle(Integer cycle) {
+        this.cycle = cycle;
+    }
+
     public String getName() {
         return name;
     }

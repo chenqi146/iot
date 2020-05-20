@@ -45,6 +45,26 @@ public class Gateway extends BaseEntity {
     )
     @ApiModelProperty("网关子设备id")
     private String childDeviceId;
+    /**
+     * 网关设备id
+     */
+    @Column(
+            name = "device_sn",
+            columnDefinition = "varchar(32) not null comment '网关设备sn'"
+    )
+    @ApiModelProperty("网关设备sn")
+    private String deviceSn;
+
+
+    /**
+     * 网关子设备id
+     */
+    @Column(
+            name = "child_device_Sn",
+            columnDefinition = "varchar(32) not null comment '网关子设备sn'"
+    )
+    @ApiModelProperty("网关子设备sn")
+    private String childDeviceSn;
 
     public String getDeviceId() {
         return deviceId;
@@ -60,5 +80,21 @@ public class Gateway extends BaseEntity {
 
     public void setChildDeviceId(String childDeviceId) {
         this.childDeviceId = childDeviceId;
+    }
+
+    public String getDeviceSn() {
+        return deviceSn;
+    }
+
+    public void setDeviceSn(String deviceSn) {
+        this.deviceSn = deviceSn;
+    }
+
+    public String getChildDeviceSn() {
+        return childDeviceSn;
+    }
+
+    public void setChildDeviceSn(String childDeviceSn) {
+        this.childDeviceSn = childDeviceSn;
     }
 }

@@ -1,7 +1,5 @@
 package com.cqmike.common.dto;
 
-import com.cqmike.core.util.JsonUtils;
-
 /**
  * @program: iot
  * @ClassName: AnalyseDataDTO
@@ -15,7 +13,7 @@ public class AnalyseDataDTO {
     private String deviceSn;
     private String productId;
 
-    private String data;
+    private Object data;
 
     public AnalyseDataDTO() {
     }
@@ -23,7 +21,7 @@ public class AnalyseDataDTO {
     public AnalyseDataDTO(String deviceSn, String productId, Object data) {
         this.deviceSn = deviceSn;
         this.productId = productId;
-        this.data = JsonUtils.toJson(data);
+        this.data = data;
     }
 
     public String getDeviceSn() {
@@ -42,11 +40,11 @@ public class AnalyseDataDTO {
         this.productId = productId;
     }
 
-    public String getData() {
+    public Object getData() {
         return data;
     }
 
-    public void setData(String data) {
+    public void setData(Object data) {
         this.data = data;
     }
 }

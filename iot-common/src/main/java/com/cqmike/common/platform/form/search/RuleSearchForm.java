@@ -3,6 +3,8 @@ package com.cqmike.common.platform.form.search;
 import com.cqmike.common.platform.enums.MiddleTypeEnum;
 import com.cqmike.common.platform.enums.RuleStatusEnum;
 import com.cqmike.common.platform.enums.RuleTypeEnum;
+import com.cqmike.core.annotation.Query;
+import com.cqmike.core.annotation.QueryType;
 import com.cqmike.core.form.BaseSearchForm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -36,6 +38,7 @@ public class RuleSearchForm extends BaseSearchForm {
      * 规则名称
      */
     @ApiModelProperty("规则名称")
+    @Query(QueryType.like)
     private String name;
 
     /**
