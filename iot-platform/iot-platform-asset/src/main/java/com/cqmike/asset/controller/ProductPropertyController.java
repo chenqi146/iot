@@ -9,9 +9,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @program: 
@@ -77,6 +80,20 @@ public class ProductPropertyController extends BaseController {
     public ReturnForm<ProductPropertyForm> remove(ProductPropertyForm form) {
         service.remove(form);
         return ReturnForm.success();
+    }
+
+
+    @ApiIgnore
+    @GetMapping("/feign/findPropertyList")
+    public ReturnForm<Map<String, Map<String,ProductPropertyForm>>> findPropertyList() {
+
+        List<ProductPropertyForm> productPropertyForms = this.service.listAll();
+        Map<String, Map<String, ProductPropertyForm>> map = productPropertyForms.stream()
+                .collect(Collectors.groupingBy(ProductPropertyForm::getProductId,
+                Collectors.toMap(ProductPropertyForm::getId, p -> p, (k1, k2) -> k1)
+        ));
+
+        return ReturnForm.success(map);
     }
 
 }

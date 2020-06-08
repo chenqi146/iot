@@ -1,13 +1,23 @@
 package com.cqmike.asset.service.impl;
 
-import com.cqmike.common.platform.form.DeviceRecordForm;
 import com.cqmike.asset.convert.DeviceRecordConvert;
 import com.cqmike.asset.entity.DeviceRecord;
-import com.cqmike.common.platform.form.search.DeviceRecordSearchForm;
 import com.cqmike.asset.repository.DeviceRecordRepository;
 import com.cqmike.asset.service.DeviceRecordService;
-import org.springframework.stereotype.Service;
+import com.cqmike.common.platform.form.DeviceRecordForm;
+import com.cqmike.common.platform.form.search.DeviceRecordSearchForm;
 import com.cqmike.core.service.AbstractCurdService;
+import com.cqmike.core.specification.EntitySpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @program: 
  * @Interface: DeviceRecordServiceImpl
@@ -29,5 +39,22 @@ public class DeviceRecordServiceImpl extends AbstractCurdService<DeviceRecord, S
         super(repository, convert);
         this.repository = repository;
         this.convert = convert;
+    }
+
+    @Override
+    public List<DeviceRecordForm> listAllBySearchForm(DeviceRecordSearchForm deviceRecordSearchForm) {
+        EntitySpecification<DeviceRecordSearchForm, DeviceRecord> specification = new EntitySpecification<>(deviceRecordSearchForm);
+        Sort sort = Sort.by(Sort.Direction.DESC, "receiveTime");
+        List<DeviceRecord> all = this.repository.findAll(specification, sort);
+        return CollectionUtils.isEmpty(all) ? Collections.emptyList() : this.convert.convertToFormList(all);
+    }
+
+    @Override
+    public Page<DeviceRecordForm> listAllBySearchFormPage(DeviceRecordSearchForm deviceRecordSearchForm) {
+        EntitySpecification<DeviceRecordSearchForm, DeviceRecord> specification = new EntitySpecification<>(deviceRecordSearchForm);
+        Sort sort = Sort.by(Sort.Direction.DESC, "receiveTime");
+        Pageable pageable = PageRequest.of(deviceRecordSearchForm.getPage(), deviceRecordSearchForm.getSize(), sort);
+        Page<DeviceRecord> all = this.repository.findAll(specification, pageable);
+        return all.map(convert::convertToForm);
     }
 }

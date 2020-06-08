@@ -1,5 +1,6 @@
 package com.cqmike.asset.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.cqmike.asset.convert.DeviceConvert;
 import com.cqmike.asset.entity.Device;
@@ -16,19 +17,16 @@ import com.cqmike.common.platform.form.ProductForm;
 import com.cqmike.common.platform.form.ProductPropertyForm;
 import com.cqmike.common.platform.form.search.DeviceSearchForm;
 import com.cqmike.common.platform.form.search.GatewaySearchForm;
-import com.cqmike.common.platform.form.search.ProductPropertySearchForm;
 import com.cqmike.core.exception.BusinessException;
 import com.cqmike.core.service.AbstractCurdService;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -79,11 +77,9 @@ public class DeviceServiceImpl extends AbstractCurdService<Device, String, Devic
         front.setCurrentProductForm(productForm);
 
         // 产品的属性
-        ProductPropertySearchForm searchForm = new ProductPropertySearchForm();
-        searchForm.setProductId(productId);
-        List<ProductPropertyForm> productPropertyForms = productPropertyService.listAllBySearchForm(searchForm);
-        Map<String, List<ProductPropertyForm>> propertyMap = new HashMap<>(2);
-        propertyMap.put(productId, productPropertyForms);
+        List<ProductPropertyForm> productPropertyForms = productPropertyService.listAll();
+        Map<String, List<ProductPropertyForm>> propertyMap = productPropertyForms.stream()
+                .collect(Collectors.groupingBy(ProductPropertyForm::getProductId));
         front.setPropertyMap(propertyMap);
 
         // 网关设备
@@ -96,7 +92,8 @@ public class DeviceServiceImpl extends AbstractCurdService<Device, String, Devic
         gatewaySearchForm.setDeviceId(deviceForm.getId());
         List<GatewayForm> gatewayForms = gatewayService.listAllBySearchForm(gatewaySearchForm);
 
-        List<String> deviceIdList = gatewayForms.stream().map(GatewayForm::getChildDeviceId).collect(Collectors.toList());
+        List<String> deviceIdList = gatewayForms.stream()
+                .map(GatewayForm::getChildDeviceId).collect(Collectors.toList());
 
         // 所有的子设备
         DeviceSearchForm deviceSearchForm = new DeviceSearchForm();
@@ -128,11 +125,13 @@ public class DeviceServiceImpl extends AbstractCurdService<Device, String, Devic
         // 找到子设备idList
         GatewaySearchForm gatewaySearchForm = new GatewaySearchForm();
         gatewaySearchForm.setDeviceId(parentId);
-        gatewaySearchForm.setPage(page);
-        gatewaySearchForm.setSize(size);
-        Page<GatewayForm> gatewayForms = gatewayService.listAllBySearchFormPage(gatewaySearchForm);
+        List<GatewayForm> gatewayForms = gatewayService.listAllBySearchForm(gatewaySearchForm);
         List<String> deviceIdList = gatewayForms.stream().map(GatewayForm::getChildDeviceId)
                 .collect(Collectors.toList());
+
+        if (CollUtil.isEmpty(deviceIdList)) {
+            return Page.empty();
+        }
 
         // 找出所有设备
         DeviceSearchForm deviceSearchForm = new DeviceSearchForm();
@@ -159,6 +158,11 @@ public class DeviceServiceImpl extends AbstractCurdService<Device, String, Devic
     public DeviceForm create(@NonNull DeviceForm form) {
 
         String parentDeviceId = form.getParentDeviceId();
+        String productId = form.getProductId();
+        ProductForm productForm = productService.findById(productId);
+
+        form.setProductName(productForm.getName());
+
         DeviceForm deviceForm = super.create(form);
         if (StrUtil.isEmpty(parentDeviceId)) {
             return deviceForm;
@@ -170,10 +174,116 @@ public class DeviceServiceImpl extends AbstractCurdService<Device, String, Devic
         GatewayForm gatewayForm = new GatewayForm();
         gatewayForm.setDeviceId(parent.getId());
         gatewayForm.setDeviceSn(parent.getSn());
-        gatewayForm.setChildDeviceId(deviceForm.getSn());
+        gatewayForm.setChildDeviceId(deviceForm.getId());
         gatewayForm.setChildDeviceSn(deviceForm.getSn());
         gatewayService.create(gatewayForm);
 
         return deviceForm;
+    }
+
+    @NonNull
+    @Override
+    public DeviceForm update(@NonNull DeviceForm form) {
+
+        String id = form.getId();
+        DeviceForm source = this.findById(id);
+
+        this.checkFormUpdate(form, source);
+
+        return super.update(source);
+    }
+
+    /**
+     *  检查修改的参数， 可选性更新
+     * @param form
+     * @param source
+     */
+    private void checkFormUpdate(DeviceForm form, DeviceForm source) {
+
+        String name = form.getName();
+        if (StrUtil.isNotEmpty(name)) {
+            source.setName(name);
+        }
+
+        Date installationDate = form.getInstallationDate();
+        if (installationDate != null) {
+            source.setInstallationDate(installationDate);
+        }
+
+        String installationLocation = form.getInstallationLocation();
+        if (StrUtil.isNotEmpty(installationLocation)) {
+            source.setInstallationLocation(installationLocation);
+        }
+
+        String productId = form.getProductId();
+        if (StrUtil.isNotEmpty(productId)) {
+            source.setProductId(productId);
+        }
+
+        String productName = form.getProductName();
+        if (StrUtil.isNotEmpty(productName)) {
+            source.setProductName(productName);
+        }
+
+        String parentDeviceId = form.getParentDeviceId();
+        if (StrUtil.isNotEmpty(parentDeviceId)) {
+            // 找到网关  该设备id所属的网关列表   一个设备只会属于一个网关设备或者没有
+            GatewaySearchForm searchForm = new GatewaySearchForm();
+            String deviceId = form.getId();
+            searchForm.setChildDeviceId(deviceId);
+            List<GatewayForm> gatewayForms = gatewayService.listAllBySearchForm(searchForm);
+            Set<String> gatewayDeviceIds = gatewayForms.stream()
+                    .map(GatewayForm::getDeviceId).collect(Collectors.toSet());
+
+            if (!gatewayDeviceIds.contains(parentDeviceId)) {
+                return;
+            }
+
+            // 删除所属的网关
+            gatewayForms.forEach(g -> {
+                if (!g.getDeviceId().equals(parentDeviceId)) {
+                    return;
+                }
+                if (!g.getChildDeviceId().equals(deviceId)) {
+                    return;
+                }
+                gatewayService.removeById(g.getId());
+            });
+
+            DeviceForm parentDevice = this.findById(parentDeviceId);
+            GatewayForm gatewayForm = new GatewayForm();
+            gatewayForm.setDeviceId(parentDeviceId);
+            gatewayForm.setDeviceSn(parentDevice.getSn());
+            gatewayForm.setChildDeviceId(deviceId);
+            gatewayForm.setChildDeviceSn(form.getSn());
+
+            gatewayService.create(gatewayForm);
+
+        }
+
+    }
+
+    @Override
+    public DeviceForm innerUpdate(DeviceForm form) {
+        return super.update(form);
+    }
+
+    @NonNull
+    @Override
+    public DeviceForm findById(@NonNull String s) {
+        DeviceForm form = super.findById(s);
+
+        ProductTypeEnum type = form.getType();
+        if (type == ProductTypeEnum.CHILD_DEVICE) {
+            GatewaySearchForm searchForm = new GatewaySearchForm();
+            searchForm.setChildDeviceId(form.getId());
+            List<GatewayForm> gatewayForms = gatewayService.listAllBySearchForm(searchForm);
+            if (CollUtil.isNotEmpty(gatewayForms)) {
+                GatewayForm gatewayForm = gatewayForms.get(0);
+                form.setParentDeviceId(gatewayForm.getDeviceId());
+            }
+        }
+
+        return form;
     }
 }

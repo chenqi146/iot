@@ -1,9 +1,11 @@
 package com.cqmike.front.netty.decoder;
 
 import com.cqmike.common.dto.AnalyseDataDTO;
+import com.cqmike.common.dto.Message;
 import com.cqmike.common.front.form.RuleFormForFront;
 import com.cqmike.common.platform.enums.MiddleTypeEnum;
 import com.cqmike.common.platform.enums.RuleTypeEnum;
+import com.cqmike.core.util.JsonUtils;
 import com.cqmike.front.map.RuleFormMap;
 import com.cqmike.front.service.KafkaService;
 import com.cqmike.front.service.MqttSender;
@@ -52,7 +54,14 @@ public class DistributionDecoder extends ChannelInboundHandlerAdapter {
                 kafkaService.asyncSendDataToKafkaTopic(topic, dto);
 
             } else if (middleType == MiddleTypeEnum.MQTT) {
-                mqttSender.sendData(topic, dto);
+                try {
+                    Message message = new Message(dto);
+                    String json = JsonUtils.toJson(message);
+                    mqttSender.sendToMqtt(topic, json);
+                    log.info("数据推送到mqtt——topic: ({}), 数据为: ({})", topic, json);
+                } catch (Exception e) {
+                    log.error("mqtt发送消息异常, 设备sn为[{}]", dto.getDeviceSn(), e);
+                }
 
             }
         }

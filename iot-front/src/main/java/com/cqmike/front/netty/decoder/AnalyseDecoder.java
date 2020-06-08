@@ -46,75 +46,97 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) throws Exception {
 
-        byteBuf.retain();
-        int readableBytes = byteBuf.readableBytes();
-        Connection connection = ctx.channel().attr(Const.CONNECTION).get();
-        if (readableBytes <= Const.DEVICE_DATA_MIN_LENGTH) {
-            log.debug("ClientId为 ({}), 通道的deviceSn为 ({}) 设备数据报小于设备上报最小长度", ctx.channel().id(), connection.getDeviceSn());
-            return;
-        }
-
-        byte[] deviceSnBytes = new byte[Const.DEVICE_DATA_MIN_LENGTH];
-        byteBuf.readBytes(deviceSnBytes);
-
-        String deviceSn = new String(deviceSnBytes);
-        DeviceFormForFront deviceFormForFront = connection.getDeviceFormForFront();
-        ProductForm currentProductForm = deviceFormForFront.getCurrentProductForm();
-
-        String productId;
-        ProductTypeEnum productType = currentProductForm.getType();
-
-        if (productType == ProductTypeEnum.GATEWAY) {
-
-            Map<String, DeviceForm> childDeviceFormMap = deviceFormForFront.getChildDeviceFormMap();
-            if (CollectionUtils.isEmpty(childDeviceFormMap)) {
+        try {
+            byteBuf.retain();
+            int readableBytes = byteBuf.readableBytes();
+            Connection connection = ctx.channel().attr(Const.CONNECTION).get();
+            if (readableBytes <= Const.DEVICE_DATA_MIN_LENGTH) {
+                log.debug("ClientId为 ({}), 通道的deviceSn为 ({}) 设备数据报小于设备上报最小长度", ctx.channel().id(), connection.getDeviceSn());
+                byteBuf.skipBytes(byteBuf.readableBytes());
                 return;
             }
-            DeviceForm form = childDeviceFormMap.get(deviceSn);
-            if (form == null) {
-                log.debug("ClientId为 ({})的通道，deviceId为 ({})的设备没有对应的设备信息", ctx.channel().id(), deviceSn);
+
+            byte[] bytes1 = new byte[readableBytes];
+            byteBuf.getBytes(0, bytes1);
+            String str = new String(bytes1);
+            log.info("收到的数据为: [{}]", str);
+
+            byte[] deviceSnBytes = new byte[Const.DEVICE_DATA_MIN_LENGTH];
+            byteBuf.readBytes(deviceSnBytes);
+
+            String deviceSn = new String(deviceSnBytes);
+            deviceSn = deviceSn.trim();
+            DeviceFormForFront deviceFormForFront = connection.getDeviceFormForFront();
+            ProductForm currentProductForm = deviceFormForFront.getCurrentProductForm();
+
+            String productId;
+            ProductTypeEnum productType = currentProductForm.getType();
+
+            if (productType == ProductTypeEnum.GATEWAY) {
+
+                Map<String, DeviceForm> childDeviceFormMap = deviceFormForFront.getChildDeviceFormMap();
+                if (CollectionUtils.isEmpty(childDeviceFormMap)) {
+                    byteBuf.skipBytes(byteBuf.readableBytes());
+                    return;
+                }
+                DeviceForm form = childDeviceFormMap.get(deviceSn);
+                if (form == null) {
+                    log.debug("ClientId为 ({})的通道，deviceId为 ({})的设备没有对应的设备信息", ctx.channel().id(), deviceSn);
+                    byteBuf.skipBytes(byteBuf.readableBytes());
+                    return;
+                }
+                productId = form.getProductId();
+                deviceSn = form.getSn();
+                log.info("通道sn为({}), 设备sn为({})", connection.getDeviceSn(), deviceSn);
+
+            } else {
+
+                if (!deviceSn.equals(connection.getDeviceSn())) {
+                    log.error("ClientId为 ({})的设备非网关, 且数据报deviceSn为({}), 通道deviceSn为({}), 两者不相等",ctx.channel().id(),
+                            deviceSn, connection.getDeviceSn());
+                    byteBuf.skipBytes(byteBuf.readableBytes());
+                    return;
+                }
+                productId = currentProductForm.getId();
+
+            }
+            log.info("设备sn为: [{}]", deviceSn);
+
+            String result = scriptExecute(byteBuf, productId);
+            if (StringUtils.isEmpty(result)) {
+                byteBuf.skipBytes(byteBuf.readableBytes());
                 return;
             }
-            productId = form.getProductId();
 
-        } else {
-
-            if (!deviceSn.equals(connection.getDeviceSn())) {
-                log.error("ClientId为 ({})的设备非网关, 且数据报deviceSn为({}), 通道deviceSn为({}), 两者不相等",ctx.channel().id(),
-                        deviceSn, connection.getDeviceSn());
+            Map<String, List<ProductPropertyForm>> propertyMap = deviceFormForFront.getPropertyMap();
+            if (CollectionUtils.isEmpty(propertyMap)) {
+                byteBuf.skipBytes(byteBuf.readableBytes());
                 return;
             }
-            productId = currentProductForm.getId();
+            List<ProductPropertyForm> productProperties = propertyMap.get(productId);
+            if (CollectionUtils.isEmpty(productProperties)) {
+                byteBuf.skipBytes(byteBuf.readableBytes());
+                return;
+            }
+            Map<String, Object> parse = JsonUtils.parse(result, new TypeReference<Map<String, Object>>(){});
 
-        }
+            Map<String, Object> resultMap = getResultMapForVerify(deviceSn, parse, productProperties);
+            if (CollectionUtil.isEmpty(resultMap)) {
+                byteBuf.skipBytes(byteBuf.readableBytes());
+                return;
+            }
 
-        ByteBuf buf = byteBuf.copy();
-        String result = scriptExecute(buf, productId);
-        if (StringUtils.isEmpty(result)) {
-            return;
+            AnalyseDataDTO dto = new AnalyseDataDTO(deviceSn, productId, resultMap);
+            list.add(dto);
+        } catch (ScriptException e) {
+            byteBuf.skipBytes(byteBuf.readableBytes());
+            log.error("Netty分析Decoder异常: ", e);
         }
-
-        Map<String, List<ProductPropertyForm>> propertyMap = deviceFormForFront.getPropertyMap();
-        if (CollectionUtils.isEmpty(propertyMap)) {
-            return;
-        }
-        List<ProductPropertyForm> productProperties = propertyMap.get(productId);
-        if (CollectionUtils.isEmpty(productProperties)) {
-            return;
-        }
-        Map<String, Object> parse = JsonUtils.parse(result, new TypeReference<Map<String, Object>>(){});
-
-        Map<String, Object> resultMap = getResultMapForVerify(deviceSn, parse, productProperties);
-        if (CollectionUtil.isEmpty(resultMap)) {
-            return;
-        }
-
-        AnalyseDataDTO dto = new AnalyseDataDTO(deviceSn, productId, resultMap);
-        list.add(dto);
 
     }
 
-    public static Map<String, Object> getResultMapForVerify(String deviceSn, Map<String, Object> result, List<ProductPropertyForm> productProperties) {
+    public static Map<String, Object> getResultMapForVerify(String deviceSn, Map<String, Object> result,
+                                                            List<ProductPropertyForm> productProperties) {
         int errorSum = 0;
         List<String> errorList = new ArrayList<>();
 
@@ -146,11 +168,12 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
         // 获取已编译的js
         CompiledScript script = CompiledScriptMap.get(productId);
         Bindings bindings = CompiledScriptMap.getBindings();
-        bindings.put("data", buf);
+        bindings.put("value", buf);
         String result = (String) script.eval(bindings);
 
         if (StringUtils.isEmpty(result)) {
             log.error("productId为({})的产品解析数据为空", productId);
+            buf.skipBytes(buf.readableBytes());
             return null;
         }
         return result;

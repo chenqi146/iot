@@ -1,6 +1,5 @@
 package com.cqmike.front.netty.decoder;
 
-import cn.hutool.core.util.HexUtil;
 import cn.hutool.core.util.StrUtil;
 import com.cqmike.common.front.form.DeviceFormForFront;
 import com.cqmike.core.result.ReturnForm;
@@ -16,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,6 +43,7 @@ public class RegisterDecoder extends ByteToMessageDecoder {
 
         // 处理空包
         if (readableBytesLength <= 0) {
+            byteBuf.skipBytes(byteBuf.readableBytes());
             return;
         }
 
@@ -51,8 +52,9 @@ public class RegisterDecoder extends ByteToMessageDecoder {
 
             byte[] bytes = new byte[readableBytesLength];
             byteBuf.readBytes(bytes);
-            String deviceSn = HexUtil.encodeHexStr(bytes);
+            String deviceSn = new String(bytes);
             if (StrUtil.isEmpty(deviceSn)) {
+                byteBuf.skipBytes(byteBuf.readableBytes());
                 return;
             }
 
@@ -60,6 +62,7 @@ public class RegisterDecoder extends ByteToMessageDecoder {
             DeviceFormForFront deviceForFront = returnForm.getMessage();
             if (deviceForFront == null) {
                 log.error("deviceSn({})没有对应的设备信息", deviceSn);
+                byteBuf.skipBytes(byteBuf.readableBytes());
                 return;
             }
             connection = new Connection(ctx.channel(), deviceSn, deviceForFront);
@@ -98,5 +101,9 @@ public class RegisterDecoder extends ByteToMessageDecoder {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         log.error("Netty出现Throwable, 异常信息: ({})", cause.getMessage());
         ctx.channel().close();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString("\r\n".getBytes()));
     }
 }

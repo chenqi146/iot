@@ -5,6 +5,8 @@ import com.cqmike.common.front.form.ParserFormForFront;
 import com.cqmike.common.front.form.RuleFormForFront;
 import com.cqmike.common.platform.form.ProductPropertyForm;
 
+import java.io.Serializable;
+
 /**
  * @program: iot
  * @ClassName: RuleScriptDTO
@@ -13,8 +15,9 @@ import com.cqmike.common.platform.form.ProductPropertyForm;
  * @Date: 2020/3/19 20:38
  * @Version: 1.0
  **/
-public class RuleScriptDTO {
+public class RuleScriptDTO implements Serializable {
 
+    private static final long serialVersionUID = -652369407000672600L;
     private OperateTypeEnum operateType;
     private RuleFormForFront ruleForm;
     private ParserFormForFront parserForm;

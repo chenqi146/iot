@@ -12,8 +12,12 @@ import java.util.HashMap;
  **/
 public class Mock extends HashMap<String, Object> {
 
+    private static final long serialVersionUID = -1404162063640045936L;
     private String deviceSn;
     private String data;
+
+    public Mock() {
+    }
 
     public String getData() {
         return data;
@@ -30,5 +34,13 @@ public class Mock extends HashMap<String, Object> {
     public void setDeviceSn(String deviceSn) {
         this.deviceSn = deviceSn;
         this.put("deviceSn", deviceSn);
+    }
+
+    @Override
+    public String toString() {
+        return "Mock{" +
+                "deviceSn='" + deviceSn + '\'' +
+                ", data='" + data + '\'' +
+                '}';
     }
 }

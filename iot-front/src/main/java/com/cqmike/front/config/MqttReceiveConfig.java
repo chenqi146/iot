@@ -29,8 +29,6 @@ public class MqttReceiveConfig {
 
     private static final Logger log = LoggerFactory.getLogger(MqttReceiveConfig.class);
 
-
-
     public final static String CHANNEL_NAME_OUT = "mqttOutboundChannel";
 
     private final MqttConfig mqttConfig;
@@ -47,6 +45,7 @@ public class MqttReceiveConfig {
         String[] split = mqttConfig.getHost().split(",");
         mqttConnectOptions.setServerURIs(split);
         mqttConnectOptions.setKeepAliveInterval(2);
+        mqttConnectOptions.setMaxInflight(1000);
         return mqttConnectOptions;
     }
 

@@ -32,6 +32,6 @@ public class Const {
     public static final AttributeKey<Connection> CONNECTION = AttributeKey
             .valueOf("connection");
 
-    public static final int DEVICE_DATA_MIN_LENGTH = 10;
+    public static final int DEVICE_DATA_MIN_LENGTH = 20;
     public static final int DEVICE_SN_LENGTH = 10;
 }

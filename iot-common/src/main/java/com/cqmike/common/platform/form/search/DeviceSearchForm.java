@@ -46,6 +46,12 @@ public class DeviceSearchForm extends BaseSearchForm {
     private String productId;
 
     /**
+     * 设备类型 GATEWAY-网关，DEVICE-设备 CHILD_DEVICE-子设备
+     */
+    @ApiModelProperty("设备类型 GATEWAY-网关，DEVICE-设备 CHILD_DEVICE-子设备")
+    private String type;
+
+    /**
      * 设备sn
      */
     @ApiModelProperty("设备sn")
@@ -106,6 +112,14 @@ public class DeviceSearchForm extends BaseSearchForm {
 
     public void setInstallationLocation(String installationLocation) {
         this.installationLocation = installationLocation;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getName() {

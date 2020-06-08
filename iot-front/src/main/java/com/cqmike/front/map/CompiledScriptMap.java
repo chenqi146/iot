@@ -1,7 +1,6 @@
 package com.cqmike.front.map;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.script.ScriptUtil;
 import com.cqmike.common.front.enums.OperateTypeEnum;
 import com.cqmike.common.front.form.ParserFormForFront;
 import com.cqmike.core.exception.BusinessException;
@@ -44,8 +43,8 @@ public class CompiledScriptMap {
     }
 
     private static void compile(String productId, String script) throws ScriptException {
-        CompiledScript compile = ScriptUtil.compile(scriptEngine, script);
-        CompiledScript compiledScript = (CompiledScript) scriptEngine.eval(productId + "(data)");
+        CompiledScript compile = ((Compilable) scriptEngine).compile(script);
+        CompiledScript compiledScript = ((Compilable) scriptEngine).compile("dataScript" + productId + "dataScript(value)");
         compiledScriptMap.put(productId, compiledScript);
         compile.eval(context);
     }

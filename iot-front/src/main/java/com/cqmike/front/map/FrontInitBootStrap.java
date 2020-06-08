@@ -42,7 +42,7 @@ public class FrontInitBootStrap implements ApplicationRunner {
         ReturnForm<List<ProductPropertyParserForm>> parserReturnForm = platformClient.listAll();
         List<ProductPropertyParserForm> parserForms = parserReturnForm.getMessage();
         Map<String, String> scriptMap = parserForms.stream().collect(Collectors
-                .toMap(ProductPropertyParserForm::getProductId, ProductPropertyParserForm::getScript));
+                .toMap(ProductPropertyParserForm::getProductId, ProductPropertyParserForm::getScript, (k1, k2) -> k1));
         CompiledScriptMap.init(scriptMap);
 
         ReturnForm<Map<String, Map<String, ProductPropertyForm>>> propertyList = platformClient.findPropertyList();

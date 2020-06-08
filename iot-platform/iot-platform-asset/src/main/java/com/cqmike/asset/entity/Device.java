@@ -1,14 +1,13 @@
 package com.cqmike.asset.entity;
 
+import com.cqmike.common.platform.enums.DeviceStatusEnum;
+import com.cqmike.common.platform.enums.ProductTypeEnum;
 import com.cqmike.core.entity.BaseEntity;
 import com.cqmike.user.interceptor.CustomerListener;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -58,6 +57,16 @@ public class Device extends BaseEntity {
     @ApiModelProperty("设备名称")
     private String name;
 
+    /**
+     * 产品类型 GATAWAY-网关，DEVICE-设备 CHILD_DEVICE-子设备
+     */
+    @ApiModelProperty(value = "产品类型 GATAWAY-网关，DEVICE-设备 CHILD_DEVICE-子设备")
+    @Column(
+            name = "type",
+            columnDefinition = "varchar(16) NOT NULL COMMENT '产品类型 GATAWAY-网关，DEVICE-设备 CHILD_DEVICE-子设备'"
+    )
+    @Enumerated(EnumType.STRING)
+    private ProductTypeEnum type;
 
     /**
      * 产品id
@@ -99,7 +108,8 @@ public class Device extends BaseEntity {
             columnDefinition = "varchar(16) not null comment '状态  ONLINE-在线  离线'"
     )
     @ApiModelProperty("状态  ONLINE-在线  离线")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private DeviceStatusEnum status;
 
 
     /**
@@ -152,11 +162,11 @@ public class Device extends BaseEntity {
         this.sn = sn;
     }
 
-    public String getStatus() {
+    public DeviceStatusEnum getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(DeviceStatusEnum status) {
         this.status = status;
     }
 
@@ -174,5 +184,13 @@ public class Device extends BaseEntity {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public ProductTypeEnum getType() {
+        return type;
+    }
+
+    public void setType(ProductTypeEnum type) {
+        this.type = type;
     }
 }

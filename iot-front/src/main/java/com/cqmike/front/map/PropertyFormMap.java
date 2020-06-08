@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * @program: iot
  * @ClassName: PropertyFormMap
- * @Description: 属性map  mqtt使用   因为有些连接走mqtt有些走netty  todo 现在没有维护
+ * @Description: 属性map  mqtt使用   因为有些连接走mqtt有些走netty
  * @Author: chen qi
  * @Date: 2020/3/19 20:58
  * @Version: 1.0
@@ -41,6 +41,7 @@ public class PropertyFormMap {
             map = new HashMap<>(4);
         }
         map.put(propertyId, value);
+        propertyMap.putIfAbsent(productId, map);
     }
 
     public static void remove(String productId, String propertyId) {

@@ -8,7 +8,10 @@ import com.cqmike.asset.entity.Device;
 import com.cqmike.asset.entity.Product;
 import com.cqmike.asset.repository.DeviceRepository;
 import com.cqmike.asset.repository.ProductRepository;
-import com.cqmike.asset.service.*;
+import com.cqmike.asset.service.GatewayService;
+import com.cqmike.asset.service.ProductPropertyParserService;
+import com.cqmike.asset.service.ProductPropertyService;
+import com.cqmike.asset.service.ProductService;
 import com.cqmike.common.dto.MockProductDTO;
 import com.cqmike.common.platform.enums.ProductTypeEnum;
 import com.cqmike.common.platform.form.*;
@@ -17,15 +20,13 @@ import com.cqmike.common.platform.form.search.ProductPropertyParserSearchForm;
 import com.cqmike.common.platform.form.search.ProductPropertySearchForm;
 import com.cqmike.common.platform.form.search.ProductSearchForm;
 import com.cqmike.core.service.AbstractCurdService;
+import com.cqmike.core.specification.EntitySpecification;
 import com.google.common.collect.Lists;
-import org.springframework.data.domain.Example;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -102,7 +103,11 @@ public class ProductServiceImpl extends AbstractCurdService<Product, String, Pro
             BeanUtil.copyProperties(productForm, dto);
             String productId = productForm.getId();
             dto.setDeviceFormList(deviceMap.get(productId));
-            dto.setPropertyFormList(propMap.get(productId));
+            List<ProductPropertyForm> productPropertyForms = propMap.get(productId);
+            if (CollUtil.isNotEmpty(productPropertyForms)) {
+                productPropertyForms.sort(Comparator.comparing(ProductPropertyForm::getCreateTime));
+            }
+            dto.setPropertyFormList(productPropertyForms);
             if (productForm.getType() == ProductTypeEnum.CHILD_DEVICE) {
                 dto.setChildDeviceMapperMap(gatewayMap);
             }
@@ -150,5 +155,14 @@ public class ProductServiceImpl extends AbstractCurdService<Product, String, Pro
             deviceRepository.deleteInBatch(deviceList);
         }
         return super.removeById(id);
+    }
+
+    @Override
+    public Page<ProductForm> listAllBySearchFormPage(ProductSearchForm productSearchForm) {
+        EntitySpecification<ProductSearchForm, Product> specification = new EntitySpecification(productSearchForm);
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Pageable pageable = PageRequest.of(productSearchForm.getPage(), productSearchForm.getSize(), sort);
+        Page<Product> all = this.repository.findAll(specification, pageable);
+        return all.map(convert::convertToForm);
     }
 }

@@ -51,6 +51,7 @@ public class RuleServiceImpl extends AbstractCurdService<Rule, String, RuleSearc
         RuleFormForFront front;
         for (RuleForm ruleForm : ruleFormList) {
             front = new RuleFormForFront();
+            front.setRuleType(ruleForm.getType());
             BeanUtil.copyProperties(ruleForm, front);
             resultList.add(front);
         }
@@ -69,5 +70,30 @@ public class RuleServiceImpl extends AbstractCurdService<Rule, String, RuleSearc
     @Override
     public void removeAll(@NonNull Collection<RuleForm> forms) {
         throw new BusinessException("不允许批量删除");
+    }
+
+    @Override
+    public RuleForm removeById(String s) {
+        return super.removeById(s);
+    }
+
+    @Override
+    public RuleForm create(RuleForm form) {
+        return super.create(form);
+    }
+
+    @Override
+    public List<RuleForm> createInBatch(Collection<RuleForm> forms) {
+        return super.createInBatch(forms);
+    }
+
+    @Override
+    public RuleForm update(RuleForm form) {
+        return super.update(form);
+    }
+
+    @Override
+    public List<RuleForm> updateInBatch(Collection<RuleForm> forms) {
+        return super.updateInBatch(forms);
     }
 }

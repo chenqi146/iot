@@ -40,4 +40,11 @@ public interface DeviceService extends CurdService<DeviceForm, String, DeviceSea
      * @return
      */
     Page<DeviceForm> findChildDeviceList(@NotNull String parentId, Integer page, Integer size);
+
+    /**
+     *  更新
+     * @param form
+     * @return
+     */
+    DeviceForm innerUpdate(DeviceForm form);
 }

@@ -42,6 +42,7 @@ public class RuleFormMap {
             map = new HashMap<>(4);
         }
         map.put(ruleId, value);
+        ruleMap.putIfAbsent(productId, map);
     }
 
     public static void remove(String productId, String ruleId) {

@@ -1,13 +1,19 @@
 package com.cqmike.mock.netty;
 
+import cn.hutool.core.collection.CollUtil;
+import com.cqmike.common.platform.form.DeviceForm;
+import com.cqmike.core.result.ReturnForm;
+import com.cqmike.mock.client.PlatformClient;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import org.slf4j.Logger;
@@ -17,6 +23,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -41,11 +48,14 @@ public class NettyClient implements CommandLineRunner {
     @Value("${mock.netty.server.count}")
     private Integer count;
 
+    @Resource
+    private PlatformClient platformClient;
+
     private final EventLoopGroup workerGroup = new NioEventLoopGroup();
 
-    private final Bootstrap bootstrap = new Bootstrap();
+    public static final Bootstrap bootstrap = new Bootstrap();
 
-    public void start() {
+    public void start() throws InterruptedException {
         bootstrap.group(workerGroup);
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.option(ChannelOption.SO_REUSEADDR, true);
@@ -54,20 +64,29 @@ public class NettyClient implements CommandLineRunner {
             protected void initChannel(SocketChannel ch) {
                 ch.pipeline().addLast(new StringDecoder());
                 ch.pipeline().addLast(new StringEncoder());
-                ch.pipeline().addLast(new MessageToByteEncoder<String>() {
-                    @Override
-                    protected void encode(ChannelHandlerContext channelHandlerContext, String s, ByteBuf byteBuf) throws Exception {
-                        byteBuf.writeBytes(s.getBytes());
-                        byteBuf.writeBytes(Unpooled.copiedBuffer("\r\n".getBytes()));
-                    }
-                });
+//                ch.pipeline().addLast(new MessageToByteEncoder<String>() {
+//                    @Override
+//                    protected void encode(ChannelHandlerContext channelHandlerContext, String s, ByteBuf byteBuf) {
+//                        byteBuf.writeBytes(s.getBytes());
+//                        byteBuf.writeBytes(Unpooled.copiedBuffer("\r\n".getBytes()));
+//                    }
+//                });
             }
         });
 
-        for (int i = 0; i < count; i++) {
-            ChannelFuture future = bootstrap.connect(host, port);
-            future.channel().writeAndFlush("sdsasd1111111ssad");
-            ChannelMap.put("", new MockChannel(future.channel()));
+        ReturnForm<List<DeviceForm>> allDeviceList = platformClient.findAllDeviceList();
+        List<DeviceForm> message = allDeviceList.getMessage();
+        if (CollUtil.isEmpty(message)) {
+            log.error("没有设备" );
+        }
+
+        for (DeviceForm deviceForm : message) {
+            ChannelFuture future = bootstrap.connect(host, port).sync();
+            ByteBuf byteBuf = Unpooled.buffer();
+            byteBuf.writeBytes(deviceForm.getSn().getBytes());
+            byteBuf.writeBytes(Unpooled.copiedBuffer("\r\n".getBytes()));
+            future.channel().writeAndFlush(byteBuf);
+            ChannelMap.put(deviceForm.getSn(), new MockChannel(future.channel()));
         }
         log.info("启动成功 {}:{}", host, port);
     }

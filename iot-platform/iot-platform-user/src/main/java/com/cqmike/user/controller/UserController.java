@@ -43,6 +43,17 @@ public class UserController extends BaseController {
         return ReturnForm.success(result);
     }
 
+    @ApiOperation("findOneByLoginName")
+    @GetMapping("/user/findOneByLoginName")
+    public ReturnForm<UserForm> findOneByLoginName(String loginName) {
+        UserForm result = service.findOneByLoginName(loginName);
+        if (result == null) {
+            return ReturnForm.success();
+        }
+        result.setPassword(null);
+        return ReturnForm.success(result);
+    }
+
     @ApiOperation("removeById")
     @DeleteMapping("/user/{id}")
     public ReturnForm<UserForm> removeById(@PathVariable("id") String id) {

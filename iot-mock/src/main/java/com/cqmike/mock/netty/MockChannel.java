@@ -1,6 +1,9 @@
 package com.cqmike.mock.netty;
 
+import cn.hutool.core.map.MapUtil;
 import io.netty.channel.Channel;
+
+import java.util.Map;
 
 /**
  * @program: iot
@@ -14,9 +17,11 @@ public class MockChannel {
 
     private Channel channel;
     private long lastTime;
+    private Map<String, Long> map;
 
     public MockChannel(Channel channel) {
         this.channel = channel;
+        map = MapUtil.newHashMap();
     }
 
     public Channel getChannel() {
@@ -27,11 +32,23 @@ public class MockChannel {
         this.channel = channel;
     }
 
-    public long getLastTime() {
-        return lastTime;
+    public long getLastTime(String sn) {
+        Long aLong = map.get(sn);
+        if (aLong == null) {
+            return 0;
+        }
+        return aLong;
     }
 
-    public void setLastTime(long lastTime) {
-        this.lastTime = lastTime;
+    public void setLastTime(String sn, long lastTime) {
+        map.put(sn, lastTime);
+    }
+
+    public Map<String, Long> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<String, Long> map) {
+        this.map = map;
     }
 }

@@ -1,7 +1,6 @@
 package com.cqmike.common.dto;
 
-import com.cqmike.core.util.JsonUtils;
-
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
@@ -13,16 +12,22 @@ import java.util.UUID;
  * @Date: 2020/3/6 21:32
  * @Version: 1.0
  **/
-public class Message {
+public class Message implements Serializable {
 
+    private static final long serialVersionUID = 5553434835281973556L;
     private String id;
-    private String msg;
+    private Object msg;
     private Date date;
+
+
+    public Message() {
+    }
 
     public Message(Object msg) {
         this.date = new Date();
         this.id = UUID.randomUUID().toString();
-        this.msg = JsonUtils.toJson(msg);
+//        this.msg = JsonUtils.toJson(msg);
+        this.msg = msg;
     }
 
     public String getId() {
@@ -33,11 +38,11 @@ public class Message {
         this.id = id;
     }
 
-    public String getMsg() {
+    public Object getMsg() {
         return msg;
     }
 
-    public void setMsg(String msg) {
+    public void setMsg(Object msg) {
         this.msg = msg;
     }
 

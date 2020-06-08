@@ -1,5 +1,6 @@
 package com.cqmike.common.platform.enums;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.RandomUtil;
 import com.cqmike.common.base.BaseEnum;
 import com.cqmike.common.platform.form.ProductPropertyForm;
@@ -142,7 +143,7 @@ public enum DataTypeEnum implements BaseEnum {
     }
 
     protected boolean compareBestValue(Double max, Double min, Object value) {
-        Double v = (Double) value;
+        Double v = Convert.toDouble(value);
         if (v > max) {
             return false;
         }

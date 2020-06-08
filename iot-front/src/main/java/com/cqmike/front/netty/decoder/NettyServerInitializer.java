@@ -5,6 +5,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 
 /**
  * @program: iot
@@ -23,7 +25,7 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new DelimiterBasedFrameDecoder(1024 * 2, Unpooled.copiedBuffer("\r\n".getBytes())));
         // 空闲检测
 //        pipeline.addLast(new IdleStateHandler(60, 0, 0, TimeUnit.SECONDS));
-        // 心跳处理
+//        // 心跳处理
 //        pipeline.addLast(new HeartbeatServerHandler());
         // 注册
         pipeline.addLast(new RegisterDecoder());
@@ -31,5 +33,7 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new AnalyseDecoder());
         // 分发
         pipeline.addLast(new DistributionDecoder());
+        pipeline.addLast(new StringDecoder());
+        pipeline.addLast(new StringEncoder());
     }
 }

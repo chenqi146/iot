@@ -1,8 +1,9 @@
 package com.cqmike.user.interceptor;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.cqmike.core.entity.BaseEntity;
+import cn.hutool.core.util.StrUtil;
 import com.cqmike.common.platform.form.UserForm;
+import com.cqmike.core.entity.BaseEntity;
 
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -34,10 +35,16 @@ public class CustomerListener {
             return;
         }
         UserForm user = Auth.getInstance().getUser();
-        if (isCreate) {
-            BeanUtil.setFieldValue(source, "createUserName", user.getUserName());
+        if (user != null) {
+            if (isCreate) {
+                if (StrUtil.isNotEmpty(user.getUserName())) {
+                    BeanUtil.setFieldValue(source, "createUserName", user.getUserName());
+                }
+            }
+            if (StrUtil.isNotEmpty(user.getUserName())) {
+                BeanUtil.setFieldValue(source, "updateUserName", user.getUserName());
+            }
         }
-        BeanUtil.setFieldValue(source, "updateUserName", user.getUserName());
         BeanUtil.setFieldValue(source, "updateTime", new Date());
     }
 }

@@ -22,9 +22,9 @@ public class DeviceRecordSearchForm extends BaseSearchForm {
     /**
      * 设备id
      */
-    @ApiModelProperty("设备id")
+    @ApiModelProperty("设备sn")
     @Query(QueryType.eq)
-    private String deviceId;
+    private String deviceSn;
 
     /**
      * 产品id
@@ -82,12 +82,12 @@ public class DeviceRecordSearchForm extends BaseSearchForm {
     @ApiModelProperty("修改时间")
     private Date updateTime;
 
-    public String getDeviceId() {
-        return deviceId;
+    public String getDeviceSn() {
+        return deviceSn;
     }
 
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
+    public void setDeviceSn(String deviceSn) {
+        this.deviceSn = deviceSn;
     }
 
     public String getProductId() {

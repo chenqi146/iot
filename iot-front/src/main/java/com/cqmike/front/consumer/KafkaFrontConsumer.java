@@ -1,11 +1,9 @@
 package com.cqmike.front.consumer;
 
-import cn.hutool.core.util.StrUtil;
 import com.cqmike.common.constant.Constant;
 import com.cqmike.common.dto.Message;
 import com.cqmike.common.dto.RuleScriptDTO;
 import com.cqmike.common.front.enums.OperateTypeEnum;
-import com.cqmike.core.util.JsonUtils;
 import com.cqmike.front.map.CompiledScriptMap;
 import com.cqmike.front.map.PropertyFormMap;
 import com.cqmike.front.map.RuleFormMap;
@@ -31,21 +29,21 @@ public class KafkaFrontConsumer {
     private static final Logger log = LoggerFactory.getLogger(KafkaFrontConsumer.class);
 
     @KafkaListener(topics = {Constant.UPDATE_RULE, Constant.UPDATE_SCRIPT})
-    public void handle(ConsumerRecord<String, String> record) throws ScriptException {
+    public void handle(ConsumerRecord<String, Message> record) throws ScriptException {
         log.info("methodName: handle ----- params: record = [{}]", record);
         if (record == null) {
             return;
         }
         String topic = record.topic();
-        String valueStr = record.value();
-        Message value = JsonUtils.parse(valueStr, Message.class);
-        String msg = value.getMsg();
-        if (StrUtil.isEmpty(msg)) {
+//        String valueStr = record.value();
+//        Message value = JsonUtils.parse(valueStr, Message.class);
+        Message value = record.value();
+        if (value == null) {
             return;
         }
-
         // 根据操作类型 动态维护 规则和解析脚本
-        RuleScriptDTO dto = JsonUtils.parse(msg, RuleScriptDTO.class);
+        RuleScriptDTO dto = (RuleScriptDTO) value.getMsg();
+
         OperateTypeEnum operateType = dto.getOperateType();
         if (Constant.UPDATE_RULE.equals(topic)) {
             RuleFormMap.update(dto.getRuleForm(), operateType);

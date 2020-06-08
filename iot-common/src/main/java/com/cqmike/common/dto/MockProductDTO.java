@@ -4,6 +4,7 @@ import com.cqmike.common.platform.form.DeviceForm;
 import com.cqmike.common.platform.form.ProductForm;
 import com.cqmike.common.platform.form.ProductPropertyForm;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ import java.util.Map;
  * @Date: 2020/4/16 18:01
  * @Version: 1.0
  **/
-public class MockProductDTO extends ProductForm {
+public class MockProductDTO extends ProductForm implements Serializable {
 
     /**
      * 下属设备List

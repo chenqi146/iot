@@ -7,6 +7,7 @@ import com.cqmike.common.platform.form.ProductPropertyParserForm;
 import com.cqmike.core.result.ReturnForm;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public interface PlatformClient {
      * @return
      */
     @GetMapping("/feign/findDeviceForFrontBySn")
-    ReturnForm<DeviceFormForFront> findDeviceForFrontBySn(String deviceSn);
+    ReturnForm<DeviceFormForFront> findDeviceForFrontBySn(@RequestParam("deviceSn") String deviceSn);
 
 
     /**
@@ -42,7 +43,7 @@ public interface PlatformClient {
      *  查询所有
      * @return
      */
-    @GetMapping("/feign/listAll")
+    @GetMapping("/feign/findPropertyList")
     ReturnForm<Map<String, Map<String,ProductPropertyForm>>> findPropertyList();
 
 

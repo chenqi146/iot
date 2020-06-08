@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/iot?characterEncoding=utf-8&useUnicode=true&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://139.196.101.188:3306/iot?characterEncoding=utf-8&useUnicode=true&serverTimezone=Asia/Shanghai
     username: root
-    password: root
+    password: cqmike
     driver-class-name: com.mysql.cj.jdbc.Driver
   cloud:
     consul:
@@ -35,14 +35,14 @@ spring:
       batch-size: 16384
       buffer-memory: 33554432
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: com.cqmike.asset.kafka.PEncodeKafka
       properties:
         linger.ms: 1
     consumer:
       enable-auto-commit: false
       auto-commit-interval: 100ms
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: com.cqmike.asset.kafka.PDecodeKafka
       properties:
         session.timeout.ms: 15000
       group-id: kafkaTopic
@@ -56,11 +56,11 @@ spring:
       indent-output: true
   redis:
 #    host: 121.36.54.71
-    host: localhost
-    port: 6379
+    host: 139.196.101.188
+    port: 63790
     database: 0
     timeout: 0
-#    password: cqmike
+    password: cqmike
     feign-token: 072C08C21F8E8B0AD2CB83FDF9EADBE0
 server:
   port: 8088

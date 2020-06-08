@@ -1,5 +1,6 @@
 package com.cqmike.mock.client;
 
+import com.cqmike.common.platform.form.DeviceForm;
 import com.cqmike.core.result.ReturnForm;
 import com.cqmike.common.dto.MockProductDTO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -24,5 +25,12 @@ public interface PlatformClient {
      */
     @GetMapping("/feign/mock/findAllProductMockList")
     ReturnForm<List<MockProductDTO>> findAllProductMockList();
+
+    /**
+     *  获取所有设备列表
+     * @return
+     */
+    @GetMapping("/feign/mock/devices")
+    ReturnForm<List<DeviceForm>> findAllDeviceList();
 
 }

@@ -1,5 +1,6 @@
 package com.cqmike.asset.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.cqmike.asset.service.ProductPropertyParserService;
 import com.cqmike.common.platform.form.ProductPropertyParserForm;
 import com.cqmike.common.platform.form.search.ProductPropertyParserSearchForm;
@@ -36,6 +37,10 @@ public class ProductPropertyParserController extends BaseController {
     @GetMapping("/productPropertyParser/{id}")
     public ReturnForm<ProductPropertyParserForm> findById(@NotNull @PathVariable("id") String id) {
         ProductPropertyParserForm result = service.findById(id);
+        String script = result.getScript();
+        int function = StrUtil.indexOf(script, "function", 0, true);
+        String sub = StrUtil.sub(script, function, script.length());
+        result.setScript(sub);
         return ReturnForm.success(result);
     }
 
@@ -53,15 +58,31 @@ public class ProductPropertyParserController extends BaseController {
         Integer size = searchForm.getSize();
         if (page == null && size == null) {
             List<ProductPropertyParserForm> formList = service.listAllBySearchForm(searchForm);
+            formList.forEach(f -> {
+                String script = f.getScript();
+                int function = StrUtil.indexOf(script, "function", 0, true);
+                String sub = StrUtil.sub(script, function, script.length());
+                f.setScript(sub);
+            });
             return ReturnForm.success(formList);
         }
         Page<ProductPropertyParserForm> formList = service.listAllBySearchFormPage(searchForm);
+        List<ProductPropertyParserForm> content = formList.getContent();
+        content.forEach(f -> {
+            String script = f.getScript();
+            int function = StrUtil.indexOf(script, "function", 0, true);
+            String sub = StrUtil.sub(script, function, script.length());
+            f.setScript(sub);
+        });
         return ReturnForm.success(formList);
     }
 
     @ApiOperation("create")
     @PostMapping("/productPropertyParser")
     public ReturnForm<ProductPropertyParserForm> create(ProductPropertyParserForm form) {
+        String script = form.getScript();
+        String readScript = "var dataScript" + form.getProductId() + "dataScript = " + script;
+        form.setScript(readScript);
         ProductPropertyParserForm result = service.create(form);
         return ReturnForm.success(result);
     }
@@ -69,6 +90,9 @@ public class ProductPropertyParserController extends BaseController {
     @ApiOperation("update")
     @PutMapping("/productPropertyParser")
     public ReturnForm<ProductPropertyParserForm> update(ProductPropertyParserForm form) {
+        String script = form.getScript();
+        String readScript = "var dataScript" + form.getProductId() + "dataScript = " + script;
+        form.setScript(readScript);
         ProductPropertyParserForm result = service.update(form);
         return ReturnForm.success(result);
     }
@@ -85,5 +109,22 @@ public class ProductPropertyParserController extends BaseController {
     public ReturnForm<List<ProductPropertyParserForm>> listAll() {
         List<ProductPropertyParserForm> forms = service.listAll();
         return ReturnForm.success(forms);
+    }
+
+    public static void main(String[] args) {
+        String temp = "var dataScript = function(value) {\n" +
+                "\tvar scriptUtil = Java.type('com.cqmike.front.util.ByteBufUtil');\n" +
+                "\tvar Voltage = scriptUtil.readDouble(value);\n" +
+                "   var ElectricCurrent = scriptUtil.readDouble(value);\n" +
+                "   var result = {\n" +
+                "   \t  'Voltage': Voltage,\n" +
+                "\t \t'ElectricCurrent': ElectricCurrent\n" +
+                "   };\n" +
+                "  \n" +
+                "  return JSON.stringify(result);\n" +
+                "}\t";
+
+        int function = StrUtil.indexOf(temp, "function", 0, true);
+        System.out.println(StrUtil.sub(temp, function, temp.length()));
     }
 }

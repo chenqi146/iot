@@ -97,8 +97,19 @@ public class DeviceController extends BaseController {
      */
     @ApiIgnore
     @GetMapping("/feign/findDeviceForFrontBySn")
-    public ReturnForm<DeviceFormForFront> findDeviceForFrontBySn(@NotNull String sn){
+    public ReturnForm<DeviceFormForFront> findDeviceForFrontBySn(@RequestParam("deviceSn") @NotNull String sn){
         DeviceFormForFront front = this.service.findDeviceForFrontBySn(sn);
+        return ReturnForm.success(front);
+    }
+
+    /**
+     *  获取所有设备列表
+     * @return
+     */
+    @ApiIgnore
+    @GetMapping("/feign/mock/devices")
+    public ReturnForm<List<DeviceForm>> findAllDeviceList(){
+        List<DeviceForm> front = this.service.listAll();
         return ReturnForm.success(front);
     }
 

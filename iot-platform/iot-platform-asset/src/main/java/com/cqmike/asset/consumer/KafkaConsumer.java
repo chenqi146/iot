@@ -1,6 +1,7 @@
 package com.cqmike.asset.consumer;
 
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.util.StrUtil;
 import com.cqmike.asset.service.DeviceRecordService;
 import com.cqmike.asset.service.DeviceService;
 import com.cqmike.asset.ws.WebSocketServer;
@@ -47,7 +48,7 @@ public class KafkaConsumer {
      * @param record
      */
     @KafkaListener(topics = {DEVICE_OFFLINE, DEVICE_ONLINE})
-    public void handleDevice(ConsumerRecord<String, String> record) {
+    public void handleDevice(ConsumerRecord<String, Message> record) {
         log.info("methodName: handleDevice ----- params: record = [{}]", record);
 
         if (record == null) {
@@ -55,11 +56,12 @@ public class KafkaConsumer {
         }
 
         String topic = record.topic();
-        String valueStr = record.value();
-        Message value = JsonUtils.parse(valueStr, Message.class);
-        String msg = value.getMsg();
+        Message value = record.value();
+        if (value == null) {
+            return;
+        }
 
-        String deviceSn = value.getMsg();
+        String deviceSn = (String) value.getMsg();
         DeviceForm deviceForm = deviceService.findOneBySn(deviceSn);
         if (topic.equals(DEVICE_OFFLINE)) {
             deviceForm.setStatus(DeviceStatusEnum.OFFLINE);
@@ -74,7 +76,7 @@ public class KafkaConsumer {
             return;
         }
 
-        deviceService.update(deviceForm);
+        deviceService.innerUpdate(deviceForm);
     }
 
     /**
@@ -82,24 +84,31 @@ public class KafkaConsumer {
      * @param record
      */
     @KafkaListener(topics = {DEVICE_DATE})
-    public void handleDeviceData(ConsumerRecord<String, String> record) {
-        log.info("methodName: handleDeviceData ----- params: record = [{}]", record);
+    public void handleDeviceData(ConsumerRecord<String, Message> record) {
 
         if (record == null) {
             return;
         }
 
-        String valueStr = record.value();
-        Message value = JsonUtils.parse(valueStr, Message.class);
+        Message value = record.value();
+        log.info("methodName: handleDeviceData ----- params: value = [{}]", value);
 
-        AnalyseDataDTO dto = JsonUtils.parse(value.getMsg(), AnalyseDataDTO.class);
+        if (value == null) {
+            return;
+        }
+
+        AnalyseDataDTO dto = (AnalyseDataDTO) value.getMsg();
+        String deviceSn = dto.getDeviceSn();
+        if (StrUtil.isEmpty(deviceSn)) {
+            return;
+        }
         SocketMessage socketMessage = new SocketMessage(2, dto.getData());
-        WebSocketServer.sendMessage(dto.getDeviceSn(), socketMessage);
+        WebSocketServer.sendMessage(deviceSn, socketMessage);
 
         DeviceRecordForm recordForm = new DeviceRecordForm();
         recordForm.setReceiveTime(DateTime.now());
         recordForm.setProductId(dto.getProductId());
-        recordForm.setDeviceSn(dto.getProductId());
+        recordForm.setDeviceSn(deviceSn);
         recordForm.setData(JsonUtils.toJson(dto.getData()));
         deviceRecordService.create(recordForm);
     }

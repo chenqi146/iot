@@ -33,23 +33,24 @@ spring:
       batch-size: 16384
       buffer-memory: 33554432
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: com.cqmike.front.kafka.EncodeKafka
+      acks: 1
       properties:
         linger.ms: 1
     consumer:
-      enable-auto-commit: false
+      enable-auto-commit: true
       auto-commit-interval: 100ms
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: com.cqmike.front.kafka.DecodeKafka
       properties:
         session.timeout.ms: 15000
       group-id: kafkaTopic
   redis:
-    host: 121.36.54.71
+    host: localhost
     port: 6379
     database: 0
     timeout: 0
-    password: root
+#    password: root
   jpa:
     hibernate:
       ddl-auto: update
@@ -60,7 +61,7 @@ spring:
 mqtt:
   host: tcp://121.36.54.71:1883
   client-id: testClientId
-  default-receive-topic: testReceiveTopic/*
+  default-receive-topic: testReceiveTopic/#
   default-sender-topic: testSenderTopic
   completion-timeout: 10000
   username: root
@@ -69,9 +70,9 @@ mqtt:
 #  level:
 #    root: debug
 server:
-  port: 8081
+  port: 8082
 
 feign:
   platform:
     name: iot-platform
-    url: 139.196.101.188:8080
+    url: localhost:8088

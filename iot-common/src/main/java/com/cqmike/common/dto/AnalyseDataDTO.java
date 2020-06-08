@@ -1,5 +1,9 @@
 package com.cqmike.common.dto;
 
+import com.cqmike.core.util.JsonUtils;
+
+import java.io.Serializable;
+
 /**
  * @program: iot
  * @ClassName: AnalyseDataDTO
@@ -8,8 +12,9 @@ package com.cqmike.common.dto;
  * @Date: 2020/3/10 20:57
  * @Version: 1.0
  **/
-public class AnalyseDataDTO {
+public class AnalyseDataDTO implements Serializable {
 
+    private static final long serialVersionUID = -6479183477915187720L;
     private String deviceSn;
     private String productId;
 
@@ -46,5 +51,14 @@ public class AnalyseDataDTO {
 
     public void setData(Object data) {
         this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "AnalyseDataDTO{" +
+                "deviceSn='" + deviceSn + '\'' +
+                ", productId='" + productId + '\'' +
+                ", data=" + JsonUtils.toJson(data) +
+                '}';
     }
 }

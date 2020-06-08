@@ -1,8 +1,5 @@
 package com.cqmike.common.platform.form.search;
 
-import com.cqmike.common.platform.enums.MiddleTypeEnum;
-import com.cqmike.common.platform.enums.RuleStatusEnum;
-import com.cqmike.common.platform.enums.RuleTypeEnum;
 import com.cqmike.core.annotation.Query;
 import com.cqmike.core.annotation.QueryType;
 import com.cqmike.core.form.BaseSearchForm;
@@ -32,7 +29,7 @@ public class RuleSearchForm extends BaseSearchForm {
      * 中间件id
      */
     @ApiModelProperty("中间件类型")
-    private MiddleTypeEnum middlewareType;
+    private String middlewareType;
 
     /**
      * 规则名称
@@ -45,7 +42,7 @@ public class RuleSearchForm extends BaseSearchForm {
      * 规则类型   流转
      */
     @ApiModelProperty("规则类型   流转")
-    private RuleTypeEnum type;
+    private String type;
 
     /**
      * 规则描述
@@ -57,7 +54,7 @@ public class RuleSearchForm extends BaseSearchForm {
      * 状态
      */
     @ApiModelProperty("状态")
-    private RuleStatusEnum status;
+    private String status;
 
     /**
      * TOPIC
@@ -97,11 +94,11 @@ public class RuleSearchForm extends BaseSearchForm {
         this.productId = productId;
     }
 
-    public MiddleTypeEnum getMiddlewareType() {
+    public String getMiddlewareType() {
         return middlewareType;
     }
 
-    public void setMiddlewareType(MiddleTypeEnum middlewareType) {
+    public void setMiddlewareType(String middlewareType) {
         this.middlewareType = middlewareType;
     }
 
@@ -113,11 +110,11 @@ public class RuleSearchForm extends BaseSearchForm {
         this.name = name;
     }
 
-    public RuleTypeEnum getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(RuleTypeEnum type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -129,11 +126,11 @@ public class RuleSearchForm extends BaseSearchForm {
         this.description = description;
     }
 
-    public RuleStatusEnum getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(RuleStatusEnum status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

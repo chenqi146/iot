@@ -1,6 +1,7 @@
 package com.cqmike.common.platform.form;
 
 import com.cqmike.common.platform.enums.DeviceStatusEnum;
+import com.cqmike.common.platform.enums.ProductTypeEnum;
 import com.cqmike.core.form.BaseForm;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -60,6 +61,18 @@ public class DeviceForm extends BaseForm {
      */
     @ApiModelProperty("父设备名称")
     private String parentDeviceName;
+
+    /**
+     * 设备类型 GATEWAY-网关，DEVICE-设备 CHILD_DEVICE-子设备
+     */
+    @ApiModelProperty("设备类型 GATEWAY-网关，DEVICE-设备 CHILD_DEVICE-子设备")
+    private ProductTypeEnum type;
+
+    /**
+     * 设备类型 GATEWAY-网关，DEVICE-设备 CHILD_DEVICE-子设备
+     */
+    @ApiModelProperty("设备类型 GATEWAY-网关，DEVICE-设备 CHILD_DEVICE-子设备")
+    private String typeName;
 
     /**
      * 设备sn
@@ -168,6 +181,9 @@ public class DeviceForm extends BaseForm {
     }
 
     public void setStatus(DeviceStatusEnum status) {
+        if (status != null) {
+            this.statusName = status.getMsg();
+        }
         this.status = status;
     }
 
@@ -185,5 +201,22 @@ public class DeviceForm extends BaseForm {
 
     public void setLastOnlineTime(Date lastOnlineTime) {
         this.lastOnlineTime = lastOnlineTime;
+    }
+
+    public ProductTypeEnum getType() {
+        return type;
+    }
+
+    public void setType(ProductTypeEnum type) {
+        this.type = type;
+        this.typeName = type.getMsg();
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @program: 
@@ -46,5 +47,30 @@ public class ProductPropertyParserServiceImpl extends AbstractCurdService<Produc
     public void removeAll(@NonNull Collection<ProductPropertyParserForm> forms) {
         throw new BusinessException("不允许批量删除");
 
+    }
+
+    @Override
+    public ProductPropertyParserForm removeById(String s) {
+        return super.removeById(s);
+    }
+
+    @Override
+    public ProductPropertyParserForm create(ProductPropertyParserForm form) {
+        return super.create(form);
+    }
+
+    @Override
+    public List<ProductPropertyParserForm> createInBatch(Collection<ProductPropertyParserForm> forms) {
+        return super.createInBatch(forms);
+    }
+
+    @Override
+    public ProductPropertyParserForm update(ProductPropertyParserForm form) {
+        return super.update(form);
+    }
+
+    @Override
+    public List<ProductPropertyParserForm> updateInBatch(Collection<ProductPropertyParserForm> forms) {
+        return super.updateInBatch(forms);
     }
 }
