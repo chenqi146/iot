@@ -26,12 +26,14 @@ public class FrontSchedule {
     private PlatformClient platformClient;
 
     /**
-     *  获取设备信息
+     *  获取设备信息 10s
      */
     @Scheduled(fixedRate = 10 * 1000)
     public void getDeviceFormForFront() {
+        // 获取所有连接通道
         List<Connection> connections = DeviceChannelRel.getConnections();
         for (Connection connection : connections) {
+            // 更新设备信息
             String deviceSn = connection.getDeviceSn();
             ReturnForm<DeviceFormForFront> form = platformClient.findDeviceForFrontBySn(deviceSn);
             DeviceFormForFront message = form.getMessage();

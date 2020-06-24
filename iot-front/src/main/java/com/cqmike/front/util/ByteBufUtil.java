@@ -5,7 +5,7 @@ import io.netty.buffer.ByteBuf;
 /**
  * @program: iot
  * @ClassName: ByteBufUtil
- * @Description: ByteBufUtil
+ * @Description: ByteBufUtil   简单封装的给js调用的静态工具类  由于js对二进制不好操作
  * @Author: chen qi
  * @Date: 2020/5/20 12:37
  * @Version: 1.0

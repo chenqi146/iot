@@ -30,6 +30,11 @@ public class CustomerListener {
         setUserInfo(source, false);
     }
 
+    /**
+     *  设置用户信息
+     * @param source
+     * @param isCreate
+     */
     private void setUserInfo(Object source, boolean isCreate) {
         if (!(source instanceof BaseEntity)) {
             return;

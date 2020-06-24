@@ -31,7 +31,7 @@ public class ChannelMap {
         channelMap.put(deviceSn, channel);
     }
 
-    public synchronized static MockChannel get(String deviceSn) {
+    public static synchronized MockChannel get(String deviceSn) {
         return channelMap.get(deviceSn);
     }
 
@@ -39,11 +39,11 @@ public class ChannelMap {
         return Lists.newArrayList(channelMap.values());
     }
 
-    public synchronized static List<MockProductDTO> getPropertyFormList() {
+    public static synchronized List<MockProductDTO> getPropertyFormList() {
         return propertyFormList;
     }
 
-    public synchronized static void initMockList(List<MockProductDTO> list) {
+    public static synchronized void initMockList(List<MockProductDTO> list) {
         propertyFormList.clear();
         propertyFormList.addAll(list);
     }

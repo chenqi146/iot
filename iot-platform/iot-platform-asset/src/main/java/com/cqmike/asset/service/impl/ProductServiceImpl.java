@@ -69,6 +69,10 @@ public class ProductServiceImpl extends AbstractCurdService<Product, String, Pro
         this.parserService = parserService;
     }
 
+    /**
+     *  获取mock数据
+     * @return
+     */
     @Override
     public List<MockProductDTO> findAllProductMockList() {
 
@@ -79,6 +83,7 @@ public class ProductServiceImpl extends AbstractCurdService<Product, String, Pro
             return Collections.emptyList();
         }
 
+        // 避免循环依赖  从dao层拿数据
         List<Device> deviceList = deviceRepository.findAll();
         List<DeviceForm> deviceForms = deviceConvert.convertToFormList(deviceList);
         if (CollUtil.isEmpty(deviceForms)) {
@@ -97,6 +102,7 @@ public class ProductServiceImpl extends AbstractCurdService<Product, String, Pro
         Map<String, String> gatewayMap = gatewayForms.stream().collect(
                 Collectors.toMap(GatewayForm::getChildDeviceId, GatewayForm::getDeviceSn, (k1, k2) -> k1));
 
+        // 组装数据
         MockProductDTO dto;
         for (ProductForm productForm : productForms) {
             dto = new MockProductDTO();

@@ -10,7 +10,7 @@ import java.io.Serializable;
 /**
  * @program: iot
  * @ClassName: RuleScriptDTO
- * @Description: 规则和脚本传输对象
+ * @Description: 规则和脚本、属性传输对象  平台层发送数据变化  传输此对象维护front的数据
  * @Author: chen qi
  * @Date: 2020/3/19 20:38
  * @Version: 1.0
@@ -18,7 +18,13 @@ import java.io.Serializable;
 public class RuleScriptDTO implements Serializable {
 
     private static final long serialVersionUID = -652369407000672600L;
+    /**
+     *  操作类型
+     */
     private OperateTypeEnum operateType;
+    /**
+     *  规则
+     */
     private RuleFormForFront ruleForm;
     private ParserFormForFront parserForm;
     private ProductPropertyForm propForm;

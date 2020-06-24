@@ -41,6 +41,11 @@ public class DeviceRecordServiceImpl extends AbstractCurdService<DeviceRecord, S
         this.convert = convert;
     }
 
+    /**
+     *  重写排序  基础框架没有封装排序
+     * @param deviceRecordSearchForm
+     * @return
+     */
     @Override
     public List<DeviceRecordForm> listAllBySearchForm(DeviceRecordSearchForm deviceRecordSearchForm) {
         EntitySpecification<DeviceRecordSearchForm, DeviceRecord> specification = new EntitySpecification<>(deviceRecordSearchForm);

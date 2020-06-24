@@ -35,8 +35,6 @@ public class KafkaFrontConsumer {
             return;
         }
         String topic = record.topic();
-//        String valueStr = record.value();
-//        Message value = JsonUtils.parse(valueStr, Message.class);
         Message value = record.value();
         if (value == null) {
             return;

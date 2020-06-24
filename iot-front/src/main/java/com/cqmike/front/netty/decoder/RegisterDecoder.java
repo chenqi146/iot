@@ -47,9 +47,11 @@ public class RegisterDecoder extends ByteToMessageDecoder {
             return;
         }
 
+        // 判断是否建立连接
         Connection connection = ctx.channel().attr(Const.CONNECTION).get();
         if (connection == null) {
 
+            // 未建立连接  获取全部数据 为注册包   全部数据为设备sn
             byte[] bytes = new byte[readableBytesLength];
             byteBuf.readBytes(bytes);
             String deviceSn = new String(bytes);
@@ -68,14 +70,21 @@ public class RegisterDecoder extends ByteToMessageDecoder {
             connection = new Connection(ctx.channel(), deviceSn, deviceForFront);
             connection.register(connection);
             log.info("注册成功————ChannelId为({}), deviceSn为({})。", connection.getChannel().id(), deviceSn);
+            // 设备上线通知
             kafkaService.asyncSendDataToKafkaTopic(DEVICE_ONLINE, connection.getDeviceSn());
         } else {
+            // 设备已经注册  继续走下一个handle
             ByteBuf buf = byteBuf.retainedDuplicate();
             in.add(buf);
             byteBuf.skipBytes(readableBytesLength);
         }
     }
 
+    /**
+     *  通道断开
+     * @param ctx
+     * @throws Exception
+     */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         InetSocketAddress socketAddr = (InetSocketAddress) ctx.channel().remoteAddress();
@@ -90,6 +99,10 @@ public class RegisterDecoder extends ByteToMessageDecoder {
         kafkaService.asyncSendDataToKafkaTopic(DEVICE_OFFLINE, conn.getDeviceSn());
     }
 
+    /**
+     * 通道建立连接
+     * @param ctx
+     */
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         InetSocketAddress socketAddr = (InetSocketAddress) ctx.channel().remoteAddress();

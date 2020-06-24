@@ -1,7 +1,5 @@
 package com.cqmike.user.interceptor;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.date.TimeInterval;
 import cn.hutool.core.util.StrUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -38,12 +36,13 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        TimeInterval timer = DateUtil.timer();
+        // 获取token
         String token = request.getHeader("token");
         if (StrUtil.isEmpty(token)) {
             throw new ApiAuthorityException("接口没有携带token");
         }
 
+        // redis 判断内部token
         ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
         String feignToken = ops.get("feignToken");
         if (StrUtil.isEmpty(feignToken)) {
@@ -55,6 +54,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        // 根据token获取用户名
         String loginName = JWT.decode(token).getClaim("loginName").asString();
         if (StrUtil.isEmpty(loginName)) {
             throw new ApiAuthorityException("token无效");
@@ -64,6 +64,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (user == null) {
             throw new ApiAuthorityException("没有对应的用户存在");
         }
+        // 校验token
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(user.getPassword())).build();
         try {
             verifier.verify(token);
@@ -71,6 +72,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             throw new ApiAuthorityException("token校验出错");
         }
 
+        // 获取redis中的token
         String redisToken = ops.get(loginName);
         if (StrUtil.isEmpty(redisToken)) {
             throw new ApiAuthorityException("token过期, 请重新登陆");
@@ -80,16 +82,16 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             throw new ApiAuthorityException("token失效, 请重新登陆");
         }
 
+        // 设置redis中的token 时间
         ops.set(loginName, token, 2, TimeUnit.HOURS);
         user.setPassword(null);
         Auth.getInstance().setUser(user);
-        long interval = timer.interval();
-        System.out.println(interval);
         return true;
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        // 请求结束后把当前线程的线程变量赋null
         Auth.getInstance().setUser(null);
     }
 

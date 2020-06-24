@@ -23,7 +23,6 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -62,6 +61,11 @@ public class DeviceServiceImpl extends AbstractCurdService<Device, String, Devic
         this.convert = convert;
     }
 
+    /**
+     *  根据sn组装前置机对象
+     * @param sn
+     * @return
+     */
     @Override
     public DeviceFormForFront findDeviceForFrontBySn(@NotNull String sn) {
 
@@ -120,6 +124,13 @@ public class DeviceServiceImpl extends AbstractCurdService<Device, String, Devic
         return convert.convertToForm(device);
     }
 
+    /**
+     *  通过 设备id查找子设备
+     * @param parentId 设备id
+     * @param page
+     * @param size
+     * @return
+     */
     @Override
     public Page<DeviceForm> findChildDeviceList(@NotNull String parentId, Integer page, Integer size) {
         // 找到子设备idList

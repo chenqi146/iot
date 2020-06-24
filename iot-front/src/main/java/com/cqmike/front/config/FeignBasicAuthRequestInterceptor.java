@@ -24,6 +24,7 @@ public class FeignBasicAuthRequestInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
+        // 设置请求头的token
         requestTemplate.header("token", token);
     }
 }

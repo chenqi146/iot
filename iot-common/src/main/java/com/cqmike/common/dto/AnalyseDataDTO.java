@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * @program: iot
  * @ClassName: AnalyseDataDTO
- * @Description: 数据传输对象
+ * @Description: 数据传输对象 用于netty接收解析后的数据传输给分发处理器
  * @Author: chen qi
  * @Date: 2020/3/10 20:57
  * @Version: 1.0

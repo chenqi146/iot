@@ -28,6 +28,9 @@ public class MockProductDTO extends ProductForm implements Serializable {
      */
     private Map<String, String> childDeviceMapperMap;
 
+    /**
+     *  产品属性列表
+     */
     private List<ProductPropertyForm> propertyFormList;
 
     public List<DeviceForm> getDeviceFormList() {

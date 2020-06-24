@@ -7,7 +7,7 @@ import java.util.UUID;
 /**
  * @program: iot
  * @ClassName: Message
- * @Description: 消息类
+ * @Description: 消息类  消息传输类
  * @Author: chen qi
  * @Date: 2020/3/6 21:32
  * @Version: 1.0

@@ -5,7 +5,7 @@ import io.netty.util.AttributeKey;
 
 /**
  * @program: sbwork-receive-parent
- * @Description Const
+ * @Description Const netty常量类
  * @Author 陈琪
  * @Date 2020-03-07 15:56
  * @Version 1.0

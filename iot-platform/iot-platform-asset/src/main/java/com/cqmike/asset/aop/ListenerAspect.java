@@ -31,7 +31,8 @@ import java.util.List;
 /**
  * @program: iot
  * @ClassName: ListenerAspect
- * @Description: 监听 规则和解析类的 CURD
+ * @Description: 监听 产品的规则、属性、解析脚本的 CURD
+ * 还有些方法没有监听到，因为参数不太好切，可以在对应的方法里面手动实现
  * @Author: chen qi
  * @Date: 2020/3/21 11:59
  * @Version: 1.0
@@ -45,6 +46,9 @@ public class ListenerAspect {
     @Resource
     private KafkaService kafkaService;
 
+    /**
+     * 切入点  修改和创建方法  目标类为：  规则、属性、解析脚本
+     */
     @Pointcut(
             "(execution(* com.cqmike.core.service.AbstractCurdService.update(..)) || " +
                     "execution(* com.cqmike.core.service.AbstractCurdService.create(..))) && ( " +
@@ -61,11 +65,15 @@ public class ListenerAspect {
         String className = joinPoint.getTarget().getClass().getName();
         String methodName = signature.getName();
 
+        // 构建传输对象，参数和操作类型
         RuleScriptDTO build = getRuleScriptDTO(result, OperateTypeEnum.UPDATE);
 
         log.info("({})中的({})方法触发, 发送的消息为({})", className, methodName, build);
     }
 
+    /**
+     * 切入点  批量修改和创建方法  目标类为：  规则、属性、解析脚本
+     */
     @Pointcut(
             "(execution(* com.cqmike.core.service.AbstractCurdService.updateInBatch(..)) || " +
                     "execution(* com.cqmike.core.service.AbstractCurdService.createInBatch(..))) && (" +
@@ -106,6 +114,7 @@ public class ListenerAspect {
         RuleScriptDTO build = new RuleScriptDTO();
         build.setOperateType(typeEnum);
 
+        // 规则
         if (result instanceof RuleForm) {
             RuleForm ruleForm = (RuleForm) result;
             RuleFormForFront front = new RuleFormForFront();
@@ -115,6 +124,7 @@ public class ListenerAspect {
             build.setRuleForm(front);
             kafkaService.asyncSendDataToKafkaTopic(Constant.UPDATE_RULE, build);
 
+            // 解析脚本
         } else if (result instanceof ProductPropertyParserForm) {
             ProductPropertyParserForm parserForm = (ProductPropertyParserForm) result;
             ParserFormForFront front = new ParserFormForFront();
@@ -122,6 +132,8 @@ public class ListenerAspect {
             build.setParserForm(front);
             build.setProductId(front.getProductId());
             kafkaService.asyncSendDataToKafkaTopic(Constant.UPDATE_SCRIPT, build);
+
+            // 属性
         } else if (result instanceof ProductPropertyForm) {
             ProductPropertyForm propForm = (ProductPropertyForm) result;
             build.setPropForm(propForm);
@@ -132,7 +144,9 @@ public class ListenerAspect {
     }
 
 
-
+    /**
+     * 切入点  删除方法  目标类为：  规则、属性、解析脚本
+     */
     @Pointcut(
             "execution(* com.cqmike.core.service.AbstractCurdService.removeById(..)) &&( " +
                     "target(com.cqmike.asset.service.impl.RuleServiceImpl) ||" +
@@ -154,6 +168,9 @@ public class ListenerAspect {
         log.info("({})中的({})方法触发, 发送的消息为({})", className, methodName, build);
     }
 
+    /**
+     *  删除全部  暂未使用
+     */
     @Pointcut(
             "execution(* com.cqmike.core.service.AbstractCurdService.removeAll(..)) &&( " +
                     "target(com.cqmike.asset.service.impl.RuleServiceImpl) ||" +

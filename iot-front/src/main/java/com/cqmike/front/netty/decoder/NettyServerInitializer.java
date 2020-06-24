@@ -33,6 +33,8 @@ public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new AnalyseDecoder());
         // 分发
         pipeline.addLast(new DistributionDecoder());
+
+        // 数据解码 编码
         pipeline.addLast(new StringDecoder());
         pipeline.addLast(new StringEncoder());
     }

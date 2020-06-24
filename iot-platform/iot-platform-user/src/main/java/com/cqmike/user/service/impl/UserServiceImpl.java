@@ -66,19 +66,23 @@ public class UserServiceImpl extends AbstractCurdService<User, String, UserSearc
     @Override
     public String login(String loginName, String password) {
 
+        // 根据登录名查询用户
         UserForm userForm = this.findOneByLoginName(loginName);
         if (userForm == null) {
             throw new BusinessException("用户或密码不正确");
         }
 
+        // md5加密
         String pwdStr = SecureUtil.md5(password);
         boolean equals = pwdStr.equals(userForm.getPassword());
         if (!equals) {
             throw new BusinessException("用户或密码不正确");
         }
+        // 生成jwt token
         String token = JWT.create()
                 .withClaim("loginName", loginName)
                 .sign(Algorithm.HMAC256(pwdStr));
+        // redis 设置token
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
         ops.set(loginName, token, 2, TimeUnit.HOURS);
         return token;
@@ -86,6 +90,7 @@ public class UserServiceImpl extends AbstractCurdService<User, String, UserSearc
 
     @Override
     public void logout() {
+        // 注销  销毁redis用户信息
         UserForm user = Auth.getInstance().getUser();
         redisTemplate.delete(user.getLoginName());
     }

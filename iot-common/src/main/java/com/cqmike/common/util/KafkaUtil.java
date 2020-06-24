@@ -5,7 +5,7 @@ import java.io.*;
 /**
  * @program: iot
  * @ClassName: KafkaUtil
- * @Description: KafkaUtil
+ * @Description: KafkaUtil   kafka转换类   对象和字节数组的互转
  * @Author: chen qi
  * @Date: 2020/5/25 20:26
  * @Version: 1.0

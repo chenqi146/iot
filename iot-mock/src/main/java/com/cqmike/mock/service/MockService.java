@@ -38,7 +38,7 @@ import java.util.Set;
 /**
  * @program: iot
  * @ClassName: MockService
- * @Description: 模拟数据类
+ * @Description: 模拟数据类   @Order(10000000)设置bean的初始化权重   此bean必须在NettyClient之后进行
  * @Author: chen qi
  * @Date: 2020/4/16 18:45
  * @Version: 1.0
@@ -58,10 +58,11 @@ public class MockService implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        aaa();
+        // 第一次的初始化数据  因为@Scheduled 会比NettyClient快  从而导致 连接还未建立 就已经在发送数据了
+        firstInit();
     }
 
-    public void aaa() {
+    public void firstInit() {
         ReturnForm<List<MockProductDTO>> returnForm = platformClient.findAllProductMockList();
         List<MockProductDTO> message = returnForm.getMessage();
         ChannelMap.initMockList(message);
@@ -69,15 +70,19 @@ public class MockService implements CommandLineRunner {
 
     @Scheduled(fixedRate = 10000, initialDelay = 3000)
     public void init() throws InterruptedException {
+        // 获取所有产品
         ReturnForm<List<MockProductDTO>> returnForm = platformClient.findAllProductMockList();
         List<MockProductDTO> message = returnForm.getMessage();
         ChannelMap.initMockList(message);
+
+        // 获取所有连接的sn的集合
         Set<String> keySet = ChannelMap.getChannelMap().keySet();
         for (MockProductDTO mockProductDTO : message) {
             List<DeviceForm> deviceFormList = mockProductDTO.getDeviceFormList();
             if (CollUtil.isEmpty(deviceFormList)) {
                 continue;
             }
+            // 检测服务已经启动的情况下，中途新增设备  然后建立连接发送注册包
             for (DeviceForm deviceForm : deviceFormList) {
                 if (!keySet.contains(deviceForm.getSn())) {
                     ChannelFuture future = NettyClient.bootstrap.connect("localhost", 8888).sync();
@@ -91,7 +96,9 @@ public class MockService implements CommandLineRunner {
         }
     }
 
-
+    /**
+     *  模拟数据
+     */
     @Scheduled(fixedRate = 1000, initialDelay = 5000)
     public void polling() {
         List<MockProductDTO> mockProductDTOList = ChannelMap.getPropertyFormList();
@@ -114,6 +121,7 @@ public class MockService implements CommandLineRunner {
             deviceFormList.forEach(deviceForm -> {
                 String deviceFormSn = deviceForm.getSn();
                 String sn = deviceFormSn;
+                // 如果是网关子设备  数据里面发送网关子设备的sn   通道使用网关的sn
                 if (type.equals(ProductTypeEnum.CHILD_DEVICE)) {
                     sn = childDeviceMapperMap.get(deviceForm.getId());
                 }
@@ -124,6 +132,7 @@ public class MockService implements CommandLineRunner {
                 long lastTime = mockChannel.getLastTime(deviceFormSn);
                 long currentTimeMillis = System.currentTimeMillis();
 
+                // 设备都有周期   每间隔多少秒发送数据
                 if (lastTime != 0) {
                     if (currentTimeMillis - lastTime < cycleLong) {
                         return;
@@ -186,6 +195,12 @@ public class MockService implements CommandLineRunner {
 
     }
 
+    /**
+     *  写入对应类型的数据
+     * @param buf
+     * @param dataTypeEnum
+     * @param value
+     */
     private void writeData(ByteBuf buf, DataTypeEnum dataTypeEnum, Object value) {
 
         switch (dataTypeEnum) {
@@ -215,7 +230,7 @@ public class MockService implements CommandLineRunner {
     }
 
 
-    // 20 个字符
+    // 20 个字符   填充空字符
     private String encodeSn(String deviceSn) {
 
         int length = deviceSn.length();

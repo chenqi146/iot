@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * @program: iot
  * @ClassName: DecodeKafka
- * @Description: DecodeKafka
+ * @Description: DecodeKafka  kafka序列化和反序列化
  * @Author: chen qi
  * @Date: 2020/5/25 20:13
  * @Version: 1.0

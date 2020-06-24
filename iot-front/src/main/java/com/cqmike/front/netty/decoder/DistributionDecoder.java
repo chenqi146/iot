@@ -29,6 +29,9 @@ public class DistributionDecoder extends ChannelInboundHandlerAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(DistributionDecoder.class);
 
+    /**
+     * 由于netty的处理器未给spring管理  所以需要获取上下文的bean
+     */
     private KafkaService kafkaService = SpringContextUtil.getBean(KafkaService.class);
     private MqttSender mqttSender = SpringContextUtil.getBean(MqttSender.class);
 
@@ -39,6 +42,7 @@ public class DistributionDecoder extends ChannelInboundHandlerAdapter {
         String productId = dto.getProductId();
         List<RuleFormForFront> ruleFormList = RuleFormMap.get(productId);
 
+        // 发送数据到平台层
         kafkaService.asyncSendDataToKafkaTopic("deviceRecordData", dto);
         log.debug("数据推送到kafka——topic: deviceRecordData, 数据为: ({})", dto);
 

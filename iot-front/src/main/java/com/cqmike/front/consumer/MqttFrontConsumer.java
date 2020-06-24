@@ -76,10 +76,12 @@ public class MqttFrontConsumer {
                 if (split.length < TOPIC_DATA_LENGTH) {
                     return;
                 }
+                // 接收mqtt数据 获取topic  topic为设备sn
                 String sn = split[1];
                 String payload = String.valueOf(message.getPayload());
                 log.info("receiveTopic: ({}), data: ({})", receiveTopic, payload);
 
+                // 根据sn获取设备信息
                 ReturnForm<DeviceFormForFront> deviceForFront = platformClient.findDeviceForFrontBySn(sn);
                 if (!deviceForFront.isSuccess()) {
                     return;
@@ -96,6 +98,7 @@ public class MqttFrontConsumer {
                 String productId;
                 ProductTypeEnum productType = currentProductForm.getType();
 
+                // 设备是否为网关
                 if (productType == ProductTypeEnum.GATEWAY) {
 
                     Map<String, DeviceForm> childDeviceFormMap = front.getChildDeviceFormMap();
@@ -113,6 +116,7 @@ public class MqttFrontConsumer {
                     productId = currentProductForm.getId();
                 }
 
+                // 获取产品属性
                 List<ProductPropertyForm> propertyFormList = PropertyFormMap.get(productId);
                 if (CollectionUtil.isEmpty(propertyFormList)) {
                     return;
@@ -125,6 +129,7 @@ public class MqttFrontConsumer {
                 if (CollectionUtil.isEmpty(resultMap)) {
                     return;
                 }
+                // 构建传输对象
                 AnalyseDataDTO dto = new AnalyseDataDTO(sn, productId, resultMap);
 
                 this.distributionData(dto, productId);
@@ -144,7 +149,7 @@ public class MqttFrontConsumer {
     private void distributionData(AnalyseDataDTO dto, String productId) {
         List<RuleFormForFront> ruleFormList = RuleFormMap.get(productId);
 
-
+        // 发送到平台层
         kafkaService.asyncSendDataToKafkaTopic("deviceRecordData", dto);
 
         // 分发数据

@@ -32,6 +32,11 @@ public class CompiledScriptMap {
      */
     private static ScriptContext context = new SimpleScriptContext();
 
+    /**
+     *  初始化
+     * @param analyseScriptMap
+     * @throws ScriptException
+     */
     public static void init(Map<String, String> analyseScriptMap) throws ScriptException {
 
         compiledScriptMap = new HashMap<>(analyseScriptMap.size());
@@ -42,6 +47,12 @@ public class CompiledScriptMap {
 
     }
 
+    /**
+     *  预编译js脚本  根据产品id
+     * @param productId
+     * @param script
+     * @throws ScriptException
+     */
     private static void compile(String productId, String script) throws ScriptException {
         CompiledScript compile = ((Compilable) scriptEngine).compile(script);
         CompiledScript compiledScript = ((Compilable) scriptEngine).compile("dataScript" + productId + "dataScript(value)");
@@ -65,7 +76,7 @@ public class CompiledScriptMap {
         compile(productId, script);
     }
 
-    /**
+    /**  更新数据
      * @param parserForm  脚本类
      * @param operateType 操作类型
      */

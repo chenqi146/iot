@@ -71,6 +71,7 @@
         </dependency>
     </dependencies>
 
+    <!--  github的maven中央仓库包  下载不下来的话直接拷进本地maven  -->
     <repositories>
         <repository>
             <id>cqmike-maven-master-repository</id>

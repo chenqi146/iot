@@ -31,8 +31,19 @@ import javax.annotation.Resource;
 @Component
 public class KafkaConsumer {
 
+    /**
+     * 设备上线 topic
+     */
     private static final String DEVICE_OFFLINE = "deviceOffline";
+
+    /**
+     * 设备离线 topic
+     */
     private static final String DEVICE_ONLINE = "deviceOnline";
+
+    /**
+     * 设备数据topic
+     */
     private static final String DEVICE_DATE = "deviceRecordData";
 
     private static final Logger log = LoggerFactory.getLogger(KafkaConsumer.class);
@@ -65,6 +76,12 @@ public class KafkaConsumer {
         DeviceForm deviceForm = deviceService.findOneBySn(deviceSn);
         if (topic.equals(DEVICE_OFFLINE)) {
             deviceForm.setStatus(DeviceStatusEnum.OFFLINE);
+
+            /**
+             *  0-设备离线
+             *  1-设备上线
+             *  2-设备数据
+             */
             SocketMessage socketMessage = new SocketMessage(0, deviceSn);
             WebSocketServer.sendMessage(deviceSn, socketMessage);
         } else if (topic.equals(DEVICE_ONLINE)) {
@@ -76,6 +93,7 @@ public class KafkaConsumer {
             return;
         }
 
+        // 更新设备状态和  上线时间
         deviceService.innerUpdate(deviceForm);
     }
 
@@ -102,9 +120,11 @@ public class KafkaConsumer {
         if (StrUtil.isEmpty(deviceSn)) {
             return;
         }
+        // 通知前端
         SocketMessage socketMessage = new SocketMessage(2, dto.getData());
         WebSocketServer.sendMessage(deviceSn, socketMessage);
 
+        // 入库
         DeviceRecordForm recordForm = new DeviceRecordForm();
         recordForm.setReceiveTime(DateTime.now());
         recordForm.setProductId(dto.getProductId());

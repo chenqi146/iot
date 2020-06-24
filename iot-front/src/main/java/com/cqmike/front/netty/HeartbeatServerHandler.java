@@ -23,11 +23,13 @@ public class HeartbeatServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         Connection connection = ctx.channel().attr(Const.CONNECTION).get();
+        // 连接不存在
         if (connection == null) {
             log.info("该ChannelId为: ({})的通道没有进行注册, 将断开连接!", ctx.channel().id());
             ctx.disconnect();
             return;
         }
+        // 心跳事件
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
             if (e.state() == IdleState.READER_IDLE) {

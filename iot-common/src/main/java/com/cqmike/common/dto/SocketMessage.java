@@ -4,7 +4,7 @@ package com.cqmike.common.dto;
 /**
  * @program: iot
  * @ClassName: SocketMessage
- * @Description: SocketMessage
+ * @Description: SocketMessage websocket传输对象
  * @Author: chen qi
  * @Date: 2020/3/21 18:03
  * @Version: 1.0

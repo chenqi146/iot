@@ -16,7 +16,6 @@ import java.util.Map;
 public class MockChannel {
 
     private Channel channel;
-    private long lastTime;
     private Map<String, Long> map;
 
     public MockChannel(Channel channel) {

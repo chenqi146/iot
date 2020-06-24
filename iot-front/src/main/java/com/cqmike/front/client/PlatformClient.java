@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * @program: iot
  * @Interface: PlatformClient
- * @Description: 调用平台接口
+ * @Description: feign调用平台接口
  * @Author: chen qi
  * @Date: 2020/3/29 11:09
  * @Version: 1.0

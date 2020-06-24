@@ -72,6 +72,7 @@ mqtt:
 server:
   port: 8082
 
+# feign调用服务host:port
 feign:
   platform:
     name: iot-platform

@@ -38,11 +38,15 @@ public class NettyServer {
 
     private Channel channel;
 
+    /**
+     *  构造函数初始化配置
+     */
     public NettyServer() {
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 100)
                 .handler(new LoggingHandler(LogLevel.INFO))
+                // 配置netty服务端的通道
                 .childHandler(new NettyServerInitializer());
 
     }
@@ -64,6 +68,10 @@ public class NettyServer {
         }
     }
 
+    /**
+     *  优雅的关闭
+     * @throws InterruptedException
+     */
     public void stop() throws InterruptedException {
         bossGroup.shutdownGracefully().sync();
         workerGroup.shutdownGracefully().sync();

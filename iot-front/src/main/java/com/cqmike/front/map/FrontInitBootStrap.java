@@ -35,16 +35,19 @@ public class FrontInitBootStrap implements ApplicationRunner {
      */
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        // 获取规则数据 然后初始化
         ReturnForm<Map<String, Map<String, RuleFormForFront>>> ruleReturnForm = platformClient.findRuleFrontList();
         Map<String, Map<String, RuleFormForFront>> ruleFrontMap = ruleReturnForm.getMessage();
         RuleFormMap.init(ruleFrontMap);
 
+        // 获取产品属性解析脚本数据  然后初始化
         ReturnForm<List<ProductPropertyParserForm>> parserReturnForm = platformClient.listAll();
         List<ProductPropertyParserForm> parserForms = parserReturnForm.getMessage();
         Map<String, String> scriptMap = parserForms.stream().collect(Collectors
                 .toMap(ProductPropertyParserForm::getProductId, ProductPropertyParserForm::getScript, (k1, k2) -> k1));
         CompiledScriptMap.init(scriptMap);
 
+        // 获取产品属性数据  然后初始化
         ReturnForm<Map<String, Map<String, ProductPropertyForm>>> propertyList = platformClient.findPropertyList();
         Map<String, Map<String, ProductPropertyForm>> propertyMap = propertyList.getMessage();
         PropertyFormMap.init(propertyMap);

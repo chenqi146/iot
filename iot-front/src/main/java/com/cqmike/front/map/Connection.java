@@ -30,8 +30,14 @@ public class Connection {
         this.deviceFormForFront = deviceFormForFront;
     }
 
+    /**
+     *  注册
+     * @param conn
+     */
     public void register(Connection conn) {
+        // netty的属性
         conn.getChannel().attr(Const.CONNECTION).set(conn);
+        // 设备通道关系管理类注册
         DeviceChannelRel.addConnection(conn);
     }
 

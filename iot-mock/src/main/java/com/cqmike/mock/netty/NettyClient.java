@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * @program: iot
  * @ClassName: NettyClient
- * @Description: netty客户端
+ * @Description: netty客户端  实现CommandLineRunner   在最后执行run方法
  * @Author: chen qi
  * @Date: 2020/3/25 17:36
  * @Version: 1.0
@@ -45,6 +45,9 @@ public class NettyClient implements CommandLineRunner {
     @Value("${mock.netty.server.port}")
     private Integer port;
 
+    /**
+     *  未使用
+     */
     @Value("${mock.netty.server.count}")
     private Integer count;
 
@@ -80,6 +83,7 @@ public class NettyClient implements CommandLineRunner {
             log.error("没有设备" );
         }
 
+        // 启动后发送注册包
         for (DeviceForm deviceForm : message) {
             ChannelFuture future = bootstrap.connect(host, port).sync();
             ByteBuf byteBuf = Unpooled.buffer();

@@ -37,6 +37,10 @@ public class ProductPropertyParserServiceImpl extends AbstractCurdService<Produc
         this.convert = convert;
     }
 
+    /**
+     *  没有监听这里方法
+     * @param strings
+     */
     @Override
     public void removeInBatch(@NonNull Collection<String> strings) {
         throw new BusinessException("不允许批量删除");

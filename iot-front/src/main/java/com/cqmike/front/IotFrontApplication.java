@@ -21,9 +21,14 @@ public class IotFrontApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(IotFrontApplication.class, args);
+        // 在spring启动之后启动   不阻塞主线程
         NettyServer.getInstance().start();
     }
 
+    /**
+     * 有启动就有关闭嘛
+     * @throws InterruptedException
+     */
     @PreDestroy
     public void stop() throws InterruptedException {
         NettyServer.getInstance().stop();

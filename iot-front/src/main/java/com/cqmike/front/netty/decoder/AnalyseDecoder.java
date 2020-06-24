@@ -56,6 +56,7 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
                 return;
             }
 
+            // 这一段为打印数据展示  无其他用途
             byte[] bytes1 = new byte[readableBytes];
             byteBuf.getBytes(0, bytes1);
             String str = new String(bytes1);
@@ -64,6 +65,7 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
             byte[] deviceSnBytes = new byte[Const.DEVICE_DATA_MIN_LENGTH];
             byteBuf.readBytes(deviceSnBytes);
 
+            // 现在的sn是以20的长度来填充空格的  所以要去除空格
             String deviceSn = new String(deviceSnBytes);
             deviceSn = deviceSn.trim();
             DeviceFormForFront deviceFormForFront = connection.getDeviceFormForFront();
@@ -72,8 +74,10 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
             String productId;
             ProductTypeEnum productType = currentProductForm.getType();
 
+            // 设备为网关
             if (productType == ProductTypeEnum.GATEWAY) {
 
+                // 获取子设备
                 Map<String, DeviceForm> childDeviceFormMap = deviceFormForFront.getChildDeviceFormMap();
                 if (CollectionUtils.isEmpty(childDeviceFormMap)) {
                     byteBuf.skipBytes(byteBuf.readableBytes());
@@ -102,12 +106,14 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
             }
             log.info("设备sn为: [{}]", deviceSn);
 
+            // 执行解析脚本
             String result = scriptExecute(byteBuf, productId);
             if (StringUtils.isEmpty(result)) {
                 byteBuf.skipBytes(byteBuf.readableBytes());
                 return;
             }
 
+            // 获取产品属性数据
             Map<String, List<ProductPropertyForm>> propertyMap = deviceFormForFront.getPropertyMap();
             if (CollectionUtils.isEmpty(propertyMap)) {
                 byteBuf.skipBytes(byteBuf.readableBytes());
@@ -120,12 +126,14 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
             }
             Map<String, Object> parse = JsonUtils.parse(result, new TypeReference<Map<String, Object>>(){});
 
+            // 数据校验 清洗
             Map<String, Object> resultMap = getResultMapForVerify(deviceSn, parse, productProperties);
             if (CollectionUtil.isEmpty(resultMap)) {
                 byteBuf.skipBytes(byteBuf.readableBytes());
                 return;
             }
 
+            // 构建传输对象到分发handle
             AnalyseDataDTO dto = new AnalyseDataDTO(deviceSn, productId, resultMap);
             list.add(dto);
         } catch (ScriptException e) {
@@ -135,6 +143,13 @@ public class AnalyseDecoder extends ByteToMessageDecoder {
 
     }
 
+    /**
+     *  根据校验规则校验数据
+     * @param deviceSn
+     * @param result
+     * @param productProperties
+     * @return
+     */
     public static Map<String, Object> getResultMapForVerify(String deviceSn, Map<String, Object> result,
                                                             List<ProductPropertyForm> productProperties) {
         int errorSum = 0;
