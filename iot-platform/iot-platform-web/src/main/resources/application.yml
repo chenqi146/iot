@@ -55,7 +55,6 @@ spring:
     serialization:
       indent-output: true
   redis:
-#    host: 121.36.54.71
     host: localhost
     port: 6379
     database: 0
